@@ -21,7 +21,7 @@ const Header = ({ children }) => {
         <Topbar />
         <main
           style={{
-            marginLeft: isCollapsed ? "80px" : "260px",
+            marginLeft: isCollapsed ? "60px" : "220px",
             padding: "30px",
             background: theme.containerBg, 
             minHeight: "calc(100vh - 70px - 53px)", 

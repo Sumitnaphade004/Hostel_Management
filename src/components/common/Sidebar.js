@@ -24,7 +24,7 @@ const Sidebar = () => {
       <aside
         className="d-flex flex-column position-fixed"
         style={{
-          width: isCollapsed ? "80px" : "260px",
+          width: isCollapsed ? "80px" : "220px",
           height: "100vh",
           background: theme.sidebarBg,
           color: theme.sidebarText,

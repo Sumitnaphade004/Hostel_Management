@@ -1,12 +1,12 @@
 import React from "react";
-import { Banknote, Users, BedDouble} from "lucide-react";
+import { IndianRupee, Users, BedDouble} from "lucide-react";
 
 export default function Dashboard() {
   const stats = [
     {
       title: "Monthly Income",
       value: "₹3,50,000",
-      icon: Banknote,
+      icon: IndianRupee,
       bg: "success",
     },
     {
@@ -42,7 +42,7 @@ export default function Dashboard() {
                   <h6 className="card-title mb-1">{item.title}</h6>
                   <h3 className="fw-bold mb-0">{item.value}</h3>
                 </div>
-                <item.icon/>
+                <item.icon size={35}/>
               </div>
             </div>
           </div>
