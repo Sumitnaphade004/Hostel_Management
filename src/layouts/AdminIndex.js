@@ -3,9 +3,10 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/common/Sidebar";
 import Topbar from "../components/common/Topbar";
 import { useTheme } from "../context/ThemeContext";
+import Footer from "../components/common/Footer";
 
 const Header = ({ children }) => {
-  const { theme } = useTheme();
+  const { theme, isCollapsed } = useTheme();
   return (
     <div
       style={{
@@ -20,13 +21,17 @@ const Header = ({ children }) => {
         <Topbar />
         <main
           style={{
-            marginLeft: "260px",
+            marginLeft: isCollapsed ? "80px" : "260px",
             padding: "30px",
+            background: theme.containerBg, 
+            minHeight: "calc(100vh - 70px - 53px)", 
             color: theme.textPrimary,
+            transition: "margin-left 0.3s ease",
           }}
         >
           <Outlet />
         </main>
+        <Footer/>
       </div>
     </div>
   );

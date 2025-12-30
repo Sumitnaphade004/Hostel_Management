@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { TextAlignJustify, Moon, Sun } from "lucide-react";
-import ProfileDropdown from "./ProfileDropdown";
+import { TextAlignJustify, EllipsisVertical, Moon, Sun, Calendar } from "lucide-react";
+import ProfileDropdown from "../dropdowns/ProfileDropdown";
 
 const Topbar = () => {
   const { theme, currentTheme, setCurrentTheme, isCollapsed, setIsCollapsed } = useTheme();
@@ -30,7 +30,7 @@ const Topbar = () => {
         className="btn btn-sm d-flex align-items-center justify-content-center"
         onClick={() => setIsCollapsed(!isCollapsed)}
         style={{
-          background: theme.hover,
+          background: theme.topbarBorder,
           border: `1px solid ${theme.border}`,
           color: theme.text,
           width: "36px",
@@ -40,13 +40,19 @@ const Topbar = () => {
         {isCollapsed ? (
           <TextAlignJustify size={20} color={theme.textPrimary} />
         ) : (
-          <TextAlignJustify size={20} color={theme.textPrimary} />
+          <EllipsisVertical size={20} color={theme.textPrimary} />
         )}
       </button>
 
-      <div style={{ fontWeight: "500" }}>Hostel Dashboard</div>
-
       <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        <div
+          className="d-flex align-items-center justify-content-center gap-1"
+          style={{ color: theme.topbarText }}
+        > 
+          <Calendar/>
+          {new Date().toLocaleDateString('en-GB',{day: "2-digit", month:"short", year: "numeric"})}
+        </div>
+
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}

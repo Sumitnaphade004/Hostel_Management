@@ -7,7 +7,8 @@ export const themes = {
     bg: '#ffffff',
     bgSecondary: '#f8f9fa',
     bgLight: '#e9ecef',
-    
+    containerBg: "#e7e8ebff",
+
     // Sidebar
     sidebarBg: '#212529',
     sidebarText: '#ffffff',
@@ -21,6 +22,13 @@ export const themes = {
     topbarBorder: '#dee2e6',
     topbarHover: '#2563eb',
     
+    // Footer
+    footerBg: "#ffffff",
+    text: "#6c757d",
+    footerBorder: "#e5e7eb",
+    link: "#0d6efd",
+    footerHover: "#0b5ed7",
+
     // Text colors
     textPrimary: '#212529',
     textSecondary: '#6c757d',
@@ -66,7 +74,8 @@ export const themes = {
     bg: '#0d1117',
     bgSecondary: '#161b22',
     bgLight: '#21262d',
-    
+    containerBg: "#0f172a",
+
     // Sidebar
     sidebarBg: '#010409',
     sidebarText: '#c9d1d9',
@@ -79,6 +88,13 @@ export const themes = {
     topbarText: '#c9d1d9',
     topbarBorder: '#30363d',
     topbarHover: '#38bdf8',
+
+    // Footer
+    footerBg: "#0f172a",       
+    text: "#94a3b8",      
+    footerBorder: "#1e293b",
+    link: "#38bdf8",   
+    footerHover: "#7dd3fc",
 
     // Text colors
     textPrimary: '#c9d1d9',
