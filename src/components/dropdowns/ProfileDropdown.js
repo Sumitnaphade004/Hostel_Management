@@ -26,13 +26,13 @@ const ProfileDropdown = ({ theme }) => {
         onClick={() => setOpen(!open)}
         style={{
           cursor: "pointer",
-          color: theme.textSecondary,
+          color: theme.textPrimary,
         }}
         onMouseEnter={(e) => {
           setIconColor(theme.topbarHover);
         }}
         onMouseLeave={(e) => {
-          setIconColor(theme.textSecondary);
+          setIconColor(theme.textPrimary);
         }}
       >
         <CircleUser size={26} color={iconColor}/>

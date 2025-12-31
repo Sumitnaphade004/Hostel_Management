@@ -47,7 +47,7 @@ const Topbar = () => {
       <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
         <div
           className="d-flex align-items-center justify-content-center gap-1"
-          style={{ color: theme.topbarText }}
+          style={{ color: theme.textPrimary }}
         > 
           <Calendar/>
           {new Date().toLocaleDateString('en-GB',{day: "2-digit", month:"short", year: "numeric"})}
@@ -68,7 +68,7 @@ const Topbar = () => {
             currentTheme === "light" ? setIconColor(theme.topbarHover) : setIconColor("yellow");
           }}
           onMouseLeave={(e) => {
-            setIconColor(theme.textSecondary);
+            setIconColor(theme.textPrimary);
           }}
         >
           {currentTheme === "light" ? <Moon color={iconColor} /> : <Sun color={iconColor} />}
@@ -76,7 +76,7 @@ const Topbar = () => {
 
         <div
           className="d-flex align-items-center justify-content-center"
-          style={{ color: theme.textSecondary }}
+          style={{ color: theme.textPrimary }}
         >
           <ProfileDropdown theme={theme} />
         </div>

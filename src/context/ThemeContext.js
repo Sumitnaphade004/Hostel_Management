@@ -90,7 +90,7 @@ export const themes = {
     topbarHover: '#38bdf8',
 
     // Footer
-    footerBg: "#0f172a",       
+    footerBg: "#161b22",       
     text: "#94a3b8",      
     footerBorder: "#1e293b",
     link: "#38bdf8",   

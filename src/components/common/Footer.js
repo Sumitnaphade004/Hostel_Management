@@ -5,11 +5,13 @@ function Footer() {
     const {theme, isCollapsed } = useTheme()
   return (
     <footer
-    className="mt-auto py-3 border-top"
+    className="mt-auto py-3"
     style={{
         marginLeft: isCollapsed ? "80px" : "220px",
         background: theme.footerBg,
         color: theme.text,
+        borderTopWidth: "2px",
+        borderTopStyle: "solid",
         borderTopColor: theme.footerBorder,
         transition: "margin-left 0.3s ease, background 0.3s ease",
     }}

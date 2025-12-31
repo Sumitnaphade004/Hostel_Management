@@ -1,7 +1,10 @@
 import React from "react";
 import { IndianRupee, Users, BedDouble} from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Dashboard() {
+    const { currentTheme } = useTheme();
+
   const stats = [
     {
       title: "Monthly Income",
@@ -51,15 +54,16 @@ export default function Dashboard() {
       <div className="row g-4 mt-3">
         {/* Left Table */}
         <div className="col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-header fw-semibold">
-              Recent Students
+          <div className="card shadow-sm h-100 bg-transparent">
+            <div className={`card-header bg-${currentTheme !== "light" ? "light" : "dark"} text-${currentTheme === "light" ? "light" : "dark"} d-flex justify-content-between align-items-center`}>
+              <span className="fw-semibold">Recent Students</span>
+              <i className="bi bi-people-fill"></i>
             </div>
 
-            <div className="card-body p-0">
+            <div className="card-body p-0" style={{}}>
               <div className="table-responsive">
-                <table className="table table-striped mb-0">
-                  <thead className="table-light">
+                <table className={`table table-bordered table-hover align-middle mb-0 table-${currentTheme === "light" ? "light" : "dark"}`} style={{border: `2px solid #3a3d55`}} >
+                  <thead className={`table-${currentTheme === "light" ? "success" : "info"}`}>
                     <tr>
                       <th>#</th>
                       <th>Name</th>
@@ -67,22 +71,18 @@ export default function Dashboard() {
                       <th>Status</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody style={{border: `2px solid #3a3d55`}}>
                     <tr>
                       <td>1</td>
-                      <td>Rahul Patil</td>
-                      <td>101</td>
-                      <td>
-                        <span className="badge bg-success">Active</span>
-                      </td>
+                      <td className="fw-semibold">Rahul Patil</td>
+                      <td><span className="badge bg-secondary">101</span></td>
+                      <td><span className="badge bg-success">Active</span></td>
                     </tr>
                     <tr>
                       <td>2</td>
-                      <td>Amit Sharma</td>
-                      <td>102</td>
-                      <td>
-                        <span className="badge bg-warning text-dark">Pending</span>
-                      </td>
+                      <td className="fw-semibold">Amit Sharma</td>
+                      <td><span className="badge bg-secondary">102</span></td>
+                      <td><span className="badge bg-warning text-dark">Pending</span></td>
                     </tr>
                   </tbody>
                 </table>
@@ -93,15 +93,16 @@ export default function Dashboard() {
 
         {/* Right Table */}
         <div className="col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-header fw-semibold">
-              Recent Payments
+          <div className="card shadow-sm h-100 bg-transparent">
+            <div className={`card-header bg-${currentTheme !== "light" ? "light" : "dark"} text-${currentTheme === "light" ? "light" : "dark"} d-flex justify-content-between align-items-center`}>
+              <span className="fw-semibold">Recent Transactions</span>
+              <i className="bi bi-people-fill"></i>
             </div>
 
-            <div className="card-body p-0">
+            <div className="card-body p-0" style={{}}>
               <div className="table-responsive">
-                <table className="table table-striped mb-0">
-                  <thead className="table-light">
+                <table className={`table table-bordered table-hover align-middle mb-0 table-${currentTheme === "light" ? "light" : "dark"}`} style={{border: `2px solid #3a3d55`}} >
+                  <thead className={`table-${currentTheme === "light" ? "success" : "info"}`}>
                     <tr>
                       <th>#</th>
                       <th>Student</th>
@@ -112,14 +113,14 @@ export default function Dashboard() {
                   <tbody>
                     <tr>
                       <td>1</td>
-                      <td>Rahul Patil</td>
-                      <td>₹5,000</td>
+                      <td className="fw-semibold">Rahul Patil</td>
+                      <td className="text-success fw-bold">₹5,000</td>
                       <td>12 Sep 2025</td>
                     </tr>
                     <tr>
                       <td>2</td>
-                      <td>Amit Sharma</td>
-                      <td>₹4,500</td>
+                      <td className="fw-semibold">Amit Sharma</td>
+                      <td className="text-success fw-bold">₹4,500</td>
                       <td>10 Sep 2025</td>
                     </tr>
                   </tbody>
@@ -128,7 +129,8 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </div>                
+      </div>
+               
     </div>
   );
 }
