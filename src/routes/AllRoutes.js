@@ -1,13 +1,14 @@
 import { Routes, Route } from "react-router-dom";
 import AdminIndex from "../layouts/AdminIndex";
 import Dashboard from "../pages/Dashboard";
+import Rooms from "../pages/Room/AddRoom";
 
 const AppRoutes = () => {
   return (
     <Routes>
         <Route path="/" element={<AdminIndex/>}>
-            <Route path="/"  element={<Dashboard />} />
-            <Route path="room" element={<Dashboard />} />
+            <Route index element={<Dashboard />} />
+            <Route path="rooms" element={<Rooms />} />  
             <Route path="student" element={<Dashboard />} />
         </Route>
     </Routes>

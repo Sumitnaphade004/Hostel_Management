@@ -110,7 +110,7 @@ export default function Dashboard() {
                       <th>Date</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody style={{border: `2px solid #3a3d55`}}>
                     <tr>
                       <td>1</td>
                       <td className="fw-semibold">Rahul Patil</td>
