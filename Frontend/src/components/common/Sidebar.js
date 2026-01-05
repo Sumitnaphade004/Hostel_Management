@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { LayoutDashboard, Bed, Home, ChevronRight, UserPlus, CircleSmall } from "lucide-react";
+import { LayoutDashboard, Bed, Home, ChevronRight, UserPlus, CircleSmall, Wallet } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -12,7 +12,8 @@ const Sidebar = () => {
   const menuItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
     { name: "Rooms", path: "/rooms", icon: Bed },
-    { name: "Members", icon: UserPlus, children: [{ name: "Add Member", path: "/add-member" }, {name: "View Members", path: "/view-member"}] },
+    { name: "Members", icon: UserPlus, children: [{ name: "Add Member", path: "/add-member" }, {name: "All Members", path: "/view-member"}] },
+    { name: "Transactions", icon: Wallet, children: [{ name: "Add Transaction", path: "/add-transactions" }, {name: "All Transactions", path: "/view-transactions"}] },
   ];
 
   return (

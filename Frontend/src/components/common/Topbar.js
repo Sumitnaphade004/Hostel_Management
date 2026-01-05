@@ -19,13 +19,13 @@ const Topbar = () => {
     justifyContent: "space-between",
     alignItems: "center",
     padding: "0 30px",
-    marginLeft: !isCollapsed ? "210px" : "70px",
+    marginLeft: !isCollapsed ? "220px" : "80px",
     borderBottom: `1px solid ${theme.topbarBorder}`,
     transition: "all 0.3s ease",
   };
 
   return (
-    <nav style={topbarStyle}>
+    <nav className="sticky-top" style={topbarStyle}>
       <button
         className="btn btn-sm d-flex align-items-center justify-content-center"
         onClick={() => setIsCollapsed(!isCollapsed)}
@@ -35,6 +35,7 @@ const Topbar = () => {
           color: theme.text,
           width: "36px",
           height: "36px",
+          marginLeft: "-20px"
         }}
       >
         {isCollapsed ? (

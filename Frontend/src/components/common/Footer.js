@@ -9,7 +9,7 @@ function Footer() {
     style={{
         marginLeft: isCollapsed ? "80px" : "220px",
         background: theme.footerBg,
-        color: theme.text,
+        color: theme.footerText,
         borderTopWidth: "2px",
         borderTopStyle: "solid",
         borderTopColor: theme.footerBorder,

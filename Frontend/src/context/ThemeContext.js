@@ -24,7 +24,7 @@ export const themes = {
     
     // Footer
     footerBg: "#ffffff",
-    text: "#6c757d",
+    footerText: "#6c757d",
     footerBorder: "#e5e7eb",
     link: "#0d6efd",
     footerHover: "#0b5ed7",
@@ -91,7 +91,7 @@ export const themes = {
 
     // Footer
     footerBg: "#161b22",       
-    text: "#94a3b8",      
+    footerText: "#94a3b8",      
     footerBorder: "#1e293b",
     link: "#38bdf8",   
     footerHover: "#7dd3fc",
