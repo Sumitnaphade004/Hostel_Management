@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import AdminIndex from "../layouts/AdminIndex";
 import Dashboard from "../pages/Dashboard";
 import Rooms from "../pages/Room/AddRoom";
+import AddMember from "../pages/Member/AddMember";
+import ViewMember from "../pages/Member/ViewMember";
 
 const AppRoutes = () => {
   return (
@@ -9,7 +11,8 @@ const AppRoutes = () => {
         <Route path="/" element={<AdminIndex/>}>
             <Route index element={<Dashboard />} />
             <Route path="rooms" element={<Rooms />} />  
-            <Route path="student" element={<Dashboard />} />
+            <Route path="add-member" element={<AddMember />} />
+            <Route path="view-member" element={<ViewMember />} />
         </Route>
     </Routes>
     );

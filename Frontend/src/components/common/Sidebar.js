@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { LayoutDashboard, Bed, Home, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Bed, Home, ChevronRight, UserPlus, CircleSmall } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -12,6 +12,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
     { name: "Rooms", path: "/rooms", icon: Bed },
+    { name: "Members", icon: UserPlus, children: [{ name: "Add Member", path: "/add-member" }, {name: "View Members", path: "/view-member"}] },
   ];
 
   return (
@@ -264,12 +265,10 @@ const Sidebar = () => {
                                   }
                                 }}
                               >
+                                <CircleSmall size={12} color={isSubActive ? theme.sidebarActive : theme.sidebarText }/>
                                 <span
                                   style={{
                                     display: "inline-block",
-                                    width: "4px",
-                                    height: "4px",
-                                    borderRadius: "50%",
                                     background: isSubActive
                                       ? theme.sidebarActive
                                       : theme.sidebarText,

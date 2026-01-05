@@ -210,7 +210,7 @@ const Rooms = () => {
                 />
                 <input
                   type="text"
-                  className="form-control ps-5"
+                  className={`form-control ps-5 themed-input-${currentTheme}`}
                   placeholder="Search by room number or type..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -606,6 +606,14 @@ const Rooms = () => {
 
         .modal-backdrop.show {
           opacity: 0.7;
+        }
+
+        .themed-input-light::placeholder {
+          color: ${theme.textSecondary};
+        }
+
+        .themed-input-dark::placeholder {
+          color: ${theme.textSecondary};
         }
       `}</style>
     </div>
