@@ -76,7 +76,7 @@ const Rooms = () => {
 
   return (
     <div 
-      className="container-fluid p-4" 
+      className="container-fluid" 
       style={{ 
         background: theme.containerBg,
         minHeight: "100vh",
@@ -422,13 +422,13 @@ const Rooms = () => {
                 padding: "1.5rem",
               }}
             >
-              <h5 className="modal-title text-white fw-bold d-flex align-items-center gap-2">
-                <Plus size={24} />
+              <h5 className="modal-title text-white fw-bold d-flex align-items-center gap-2 mb-3">
+                <Plus size={20} />
                 Add New Room
               </h5>
               <button
                 type="button"
-                className="btn-close btn-close-white"
+                className="btn-close btn-close-white mb-3"
                 data-bs-dismiss="modal"
               ></button>
             </div>
@@ -441,7 +441,7 @@ const Rooms = () => {
                 <input
                   type="text"
                   name="roomNo"
-                  className="form-control"
+                  className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
                   placeholder="e.g., 101"
                   value={formData.roomNo}
                   onChange={handleChange}
@@ -487,7 +487,7 @@ const Rooms = () => {
                 <input
                   type="number"
                   name="capacity"
-                  className="form-control"
+                  className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
                   placeholder="Number of persons"
                   value={formData.capacity}
                   onChange={handleChange}

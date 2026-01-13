@@ -34,7 +34,7 @@ export default function Dashboard() {
 
   return (
     <div className="container">
-      <h3 className="mb-4 fw-bold">Hostel Dashboard</h3>
+      <h3 className={`mb-4 fw-bold text-${currentTheme === "dark" ? "light" : "dark"}`}>Hostel Dashboard</h3>
 
       <div className="row g-4">
         {stats.map((item, index) => (

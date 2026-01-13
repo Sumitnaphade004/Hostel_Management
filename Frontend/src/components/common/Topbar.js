@@ -2,10 +2,11 @@ import React, {useState} from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { TextAlignJustify, EllipsisVertical, Moon, Sun, Calendar } from "lucide-react";
 import ProfileDropdown from "../dropdowns/ProfileDropdown";
+import { useUser } from "../../context/AuthContext";
 
 const Topbar = () => {
   const { theme, currentTheme, setCurrentTheme, isCollapsed, setIsCollapsed } = useTheme();
-
+  const { user } = useUser();
   const [iconColor, setIconColor] = useState();
   const toggleTheme = () => {
     setCurrentTheme(currentTheme === "light" ? "dark" : "light");
@@ -79,7 +80,7 @@ const Topbar = () => {
           className="d-flex align-items-center justify-content-center"
           style={{ color: theme.textPrimary }}
         >
-          <ProfileDropdown theme={theme} />
+          <ProfileDropdown theme={theme} user={user} />
         </div>
       </div>
     </nav>

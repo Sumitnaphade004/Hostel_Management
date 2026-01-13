@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import apiRequest from "../api/ApiRequest";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/AuthContext";
 
 const Login = () => {
   const { theme, currentTheme } = useTheme();
+  const { fetchUser } = useUser();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -18,18 +22,36 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+
+    // 1️⃣ Validate first
+    if (!formData.email || !formData.password) {
+      setError("Please enter valid credentials");
+      return;
+    }
+
     setLoading(true);
 
-    // 🔗 API call here
-    setTimeout(() => {
+    try {
+      // 2️⃣ Call login API
+      await apiRequest("/login", {
+        method: "POST",
+        body: formData,
+      });
+      
+      await fetchUser();
+      
+      navigate("/dashboard");
+    } catch (error) {
+      setError("Login failed");
+    } finally {
       setLoading(false);
-      if (!formData.email || !formData.password) {
-        setError("Please enter valid credentials");
-      }
-    }, 1500);
+    }
   };
 
   return (
@@ -53,17 +75,11 @@ const Login = () => {
           <h3 style={{ color: theme.textPrimary, fontWeight: "700" }}>
             Hostel Management
           </h3>
-          <p style={{ color: theme.textMuted }}>
-            Login to continue
-          </p>
+          <p style={{ color: theme.textMuted }}>Login to continue</p>
         </div>
 
         {/* Error */}
-        {error && (
-          <div className="alert alert-danger py-2">
-            {error}
-          </div>
-        )}
+        {error && <div className="alert alert-danger py-2">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           {/* Email */}
@@ -81,7 +97,9 @@ const Login = () => {
             <input
               type="email"
               name="email"
-              className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
+              className={`form-control themed-input-${
+                currentTheme === "light" ? "light" : "dark"
+              }`}
               placeholder="Email address"
               value={formData.email}
               onChange={handleChange}
@@ -110,7 +128,9 @@ const Login = () => {
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
+              className={`form-control themed-input-${
+                currentTheme === "light" ? "light" : "dark"
+              }`}
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}

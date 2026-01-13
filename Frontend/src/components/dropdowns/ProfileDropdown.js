@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CircleUser, LogOut, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import apiRequest from "../../api/ApiRequest";
 
-const ProfileDropdown = ({ theme }) => {
+const ProfileDropdown = ({ theme, user }) => {
   const [open, setOpen] = useState(false);
   const [iconColor, setIconColor] = useState();
   const dropdownRef = useRef(null);
@@ -19,23 +20,70 @@ const ProfileDropdown = ({ theme }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      const response = await apiRequest("/logout");
+      console.log("Frontend logout:", response);
+      navigate("/");
+    } catch (error) {
+      console.log("Error!");
+    }
+  };
+
   return (
     <div ref={dropdownRef} style={{ position: "relative" }}>
       {/* Profile Icon */}
       <div
+        className="d-flex gap-2 align-items-center"
         onClick={() => setOpen(!open)}
+        onMouseEnter={() => setIconColor(theme.topbarHover)}
+        onMouseLeave={() => setIconColor(theme.textPrimary)}
         style={{
           cursor: "pointer",
-          color: theme.textPrimary,
-        }}
-        onMouseEnter={(e) => {
-          setIconColor(theme.topbarHover);
-        }}
-        onMouseLeave={(e) => {
-          setIconColor(theme.textPrimary);
+          color: iconColor,
         }}
       >
-        <CircleUser size={26} color={iconColor}/>
+        {user?.image ? (
+          <img
+            src={user.image}
+            alt={user.name}
+            style={{
+              width: "34px",
+              height: "34px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: `2px solid ${iconColor}`,
+            }}
+          />
+        ) : (
+          <CircleUser size={32} color={iconColor} />
+        )}
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            lineHeight: "1.1", // 🔥 reduces spacing
+          }}
+        >
+          <span
+            style={{
+              fontSize: "14px",
+              fontWeight: "700",
+            }}
+          >
+            Hello! {user?.name}
+          </span>
+
+          <span
+            style={{
+              fontSize: "12px",
+              color: iconColor,
+            }}
+          >
+            {user?.email}
+          </span>
+        </div>
       </div>
 
       {/* Dropdown */}
@@ -73,7 +121,7 @@ const ProfileDropdown = ({ theme }) => {
             onClick={() => {
               setOpen(false);
               console.log("Logout clicked");
-              // logout logic here
+              handleLogout();
             }}
           >
             <LogOut size={18} />

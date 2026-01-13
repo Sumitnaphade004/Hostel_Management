@@ -1,4 +1,4 @@
-import BASE_URL from "./api";
+import BASE_URL from "./Api";
 
 const apiRequest = async (endpoint, options = {}) => {
   try {

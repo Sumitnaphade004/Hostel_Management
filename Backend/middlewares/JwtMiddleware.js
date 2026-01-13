@@ -16,8 +16,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
-
 // Token generator
 const generateToken = (userData) => {
   return jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: "2d" });

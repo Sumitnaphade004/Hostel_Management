@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { LayoutDashboard, Bed, Home, ChevronRight, UserPlus, CircleSmall, Wallet } from "lucide-react";
+import { LayoutDashboard, Bed, Home, ChevronRight, UserPlus, MinusIcon, Wallet } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -10,7 +10,7 @@ const Sidebar = () => {
   const [openMenu, setOpenMenu] = useState(null);
 
   const menuItems = [
-    { name: "Dashboard", path: "/", icon: LayoutDashboard },
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Rooms", path: "/rooms", icon: Bed },
     { name: "Members", icon: UserPlus, children: [{ name: "Add Member", path: "/add-member" }, {name: "All Members", path: "/view-member"}] },
     { name: "Transactions", icon: Wallet, children: [{ name: "Add Transaction", path: "/add-transactions" }, {name: "All Transactions", path: "/view-transactions"}] },
@@ -70,10 +70,11 @@ const Sidebar = () => {
       <nav className="flex-grow-1 pt-3">
         <ul className="list-unstyled m-0 px-2">
           {menuItems.map((item, index) => {
+
             const Icon = item.icon;
 
             const isParentActive = item.path
-              ? location.pathname === item.path
+              ? location.pathname.startsWith(item.path)
               : item.children?.some((sub) =>
                   location.pathname.startsWith(sub.path)
                 );
@@ -109,7 +110,7 @@ const Sidebar = () => {
                       }}
                       onMouseEnter={(e) => {
                         if (!isParentActive) {
-                          e.currentTarget.style.background = `${theme.sidebarHover}40`;
+                          e.currentTarget.style.background = `${theme.sidebarHover}`;
                           e.currentTarget.style.transform = "translateX(5px)";
                         }
                       }}
@@ -123,7 +124,7 @@ const Sidebar = () => {
                       <Icon
                         size={22}
                         color={
-                          isParentActive ? theme.sidebarActive : theme.text
+                          isParentActive ? theme.sidebarActive : theme.sidebarText
                         }
                         style={{
                           transition: "all 0.3s ease",
@@ -255,7 +256,7 @@ const Sidebar = () => {
                                 }}
                                 onMouseEnter={(e) => {
                                   if (!isSubActive) {
-                                    e.currentTarget.style.background = `${theme.sidebarHover}60`;
+                                    e.currentTarget.style.background = `${theme.sidebarHover}`;
                                     e.currentTarget.style.paddingLeft = "1.3rem";
                                   }
                                 }}
@@ -266,7 +267,7 @@ const Sidebar = () => {
                                   }
                                 }}
                               >
-                                <CircleSmall size={12} color={isSubActive ? theme.sidebarActive : theme.sidebarText }/>
+                                <MinusIcon size={12} color={isSubActive ? theme.sidebarActive : theme.sidebarText }/>
                                 <span
                                   style={{
                                     display: "inline-block",
