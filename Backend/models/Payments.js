@@ -10,7 +10,7 @@ const Payment = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -22,7 +22,7 @@ const Payment = sequelize.define(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
-    payment_date: {
+    paymentDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
@@ -42,7 +42,7 @@ const Payment = sequelize.define(
 );
 
 // Associations
-Payment.belongsTo(Users, { foreignKey: "user_id", as: "user" });
-Users.hasMany(Payment, { foreignKey: "user_id", as: "payments" });
+Payment.belongsTo(Users, { foreignKey: "userId", as: "user" });
+Users.hasMany(Payment, { foreignKey: "userId", as: "payments" });
 
 module.exports = Payment;

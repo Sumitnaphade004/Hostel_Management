@@ -2,8 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { CircleUser, LogOut, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import apiRequest from "../../api/ApiRequest";
+import { useTheme } from "../../context/ThemeContext";
 
 const ProfileDropdown = ({ theme, user }) => {
+  const { currentTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [iconColor, setIconColor] = useState();
   const dropdownRef = useRef(null);
@@ -19,6 +21,10 @@ const ProfileDropdown = ({ theme, user }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    setIconColor(theme.textPrimary);
+  }, [currentTheme]);
 
   const handleLogout = async () => {
     try {

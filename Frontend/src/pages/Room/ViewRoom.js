@@ -1,21 +1,29 @@
-import React, { useState } from "react";
-import { Bed, Plus, Pencil, Trash2, Search, Filter, Home, Bookmark, BookmarkX } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Bed,
+  Plus,
+  Pencil,
+  Trash2,
+  Search,
+  Filter,
+  Home,
+  Bookmark,
+  BookmarkX,
+} from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import ApiRequest from "../../api/ApiRequest";
+import RoomGrid from "./RoomGrid";
+import Alert from "../../components/common/Alert";
 
 const Rooms = () => {
   const { theme, currentTheme } = useTheme();
-  
-  const [rooms, setRooms] = useState([
-    { id: 1, roomNo: "101", type: "Single", capacity: 1, status: "Available" },
-    { id: 2, roomNo: "102", type: "Double", capacity: 2, status: "Occupied" },
-    { id: 3, roomNo: "103", type: "Triple", capacity: 3, status: "Available" },
-    { id: 4, roomNo: "104", type: "Single", capacity: 1, status: "Maintenance" },
-  ]);
+
+  const [rooms, setRooms] = useState([]);
 
   const [formData, setFormData] = useState({
     roomNo: "",
-    type: "",
     capacity: "",
+    rent: "",
     status: "Available",
   });
 
@@ -26,24 +34,45 @@ const Rooms = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const addRoom = () => {
-    if (!formData.roomNo || !formData.type || !formData.capacity) {
-      alert("Please fill all required fields");
-      return;
+  const fetchRooms = async () => {
+    try {
+      const res = await ApiRequest("/all-rooms");
+      setRooms(res.allRooms);
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-    setRooms([...rooms, { ...formData, id: Date.now() }]);
-    setFormData({
-      roomNo: "",
-      type: "",
-      capacity: "",
-      status: "Available",
-    });
+  useEffect(() => {
+    fetchRooms();
+  }, []);
 
-    const modal = window.bootstrap.Modal.getInstance(
-      document.getElementById("addRoomModal")
-    );
-    modal.hide();
+  const addRoom = () => {
+    try {
+      if (!formData.roomNo || !formData.rent || !formData.capacity) {
+        Alert("Please fill all required fields", "danger");
+        return;
+      }
+
+      ApiRequest("/save-room", {
+        method: "POST",
+        body: formData,
+      });
+
+      setFormData({
+        roomNo: "",
+        rent: "",
+        capacity: "",
+      });
+
+      const modal = window.bootstrap.Modal.getInstance(
+        document.getElementById("addRoomModal"),
+      );
+      modal.hide();
+      fetchRooms();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const deleteRoom = (id) => {
@@ -52,19 +81,15 @@ const Rooms = () => {
     }
   };
 
-  const getStatusColor = (status) => {
-    if (status === "Available") return theme.success;
-    if (status === "Occupied") return theme.danger;
-    return theme.warning;
-  };
-
-  const getStatusIcon = (status) => {
-    return "●";
-  };
 
   const filteredRooms = rooms.filter((room) => {
-    const matchesSearch = room.roomNo.toLowerCase().includes(searchTerm.toLowerCase()) || room.type.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === "All" || room.status === filterStatus;
+    const matchesSearch = room.roomNo
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const matchesFilter =
+      filterStatus === "All" || room.status === filterStatus;
+
     return matchesSearch && matchesFilter;
   });
 
@@ -75,9 +100,9 @@ const Rooms = () => {
   };
 
   return (
-    <div 
-      className="container-fluid" 
-      style={{ 
+    <div
+      className="container-fluid"
+      style={{
         background: theme.containerBg,
         minHeight: "100vh",
       }}
@@ -113,12 +138,14 @@ const Rooms = () => {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 6px 20px rgba(13, 110, 253, 0.4)";
+                e.currentTarget.style.boxShadow =
+                  "0 6px 20px rgba(13, 110, 253, 0.4)";
                 e.currentTarget.style.background = theme.btnPrimaryHover;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)";
+                e.currentTarget.style.boxShadow =
+                  "0 2px 8px rgba(0, 0, 0, 0.1)";
                 e.currentTarget.style.background = theme.btnPrimary;
               }}
             >
@@ -130,9 +157,24 @@ const Rooms = () => {
           {/* Stats Cards */}
           <div className="row g-3 mb-4">
             {[
-              { label: "Total Rooms", value: stats.total, color: theme.info, icon: Home },
-              { label: "Available", value: stats.available, color: theme.success, icon: Bookmark },
-              { label: "Occupied", value: stats.occupied, color: theme.danger, icon: BookmarkX },
+              {
+                label: "Total Rooms",
+                value: stats.total,
+                color: theme.info,
+                icon: Home,
+              },
+              {
+                label: "Available",
+                value: stats.available,
+                color: theme.success,
+                icon: Bookmark,
+              },
+              {
+                label: "Occupied",
+                value: stats.occupied,
+                color: theme.danger,
+                icon: BookmarkX,
+              },
             ].map((stat, index) => (
               <div key={index} className="col-md-3 col-sm-6">
                 <div
@@ -146,7 +188,8 @@ const Rooms = () => {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-5px)";
-                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0, 0, 0, 0.15)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 25px rgba(0, 0, 0, 0.15)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
@@ -156,10 +199,16 @@ const Rooms = () => {
                   <div className="card-body p-4">
                     <div className="d-flex justify-content-between align-items-center">
                       <div>
-                        <p className="mb-1 small" style={{ color: theme.textPrimary }}>
+                        <p
+                          className="mb-1 small"
+                          style={{ color: theme.textPrimary }}
+                        >
                           {stat.label}
                         </p>
-                        <h3 className="fw-bold mb-0" style={{ color: stat.color }}>
+                        <h3
+                          className="fw-bold mb-0"
+                          style={{ color: stat.color }}
+                        >
                           {stat.value}
                         </h3>
                       </div>
@@ -260,7 +309,6 @@ const Rooms = () => {
                   <option value="All">All Status</option>
                   <option value="Available">Available</option>
                   <option value="Occupied">Occupied</option>
-                  <option value="Maintenance">Maintenance</option>
                 </select>
               </div>
             </div>
@@ -273,128 +321,15 @@ const Rooms = () => {
         </div>
       </div>
 
-      {/* Rooms Table */}
-      <div
-        className="card border-0 shadow-sm"
-        style={{
-          borderRadius: "15px",
-          animation: "fadeIn 0.5s ease-out 0.4s both",
-          background: theme.cardBg,
-        }}
-      >
-        <div className="card-body p-0">
-          <div className="table-responsive rounded-4">
-            <table
-            className={`table align-middle table-bordered mb-0 table-${
-                currentTheme === "light" ? "light" : "dark"
-            }`}
-            style={{ borderCollapse: "separate", borderSpacing: "0 8px" }}
-            >
-            <thead>
-                <tr>
-                {["Room No", "Type", "Capacity", "Status", "Actions"].map((h) => (
-                    <th
-                    key={h}
-                    className="px-4 py-3 text-uppercase small"
-                    style={{
-                        background: theme.bgSecondary,
-                        color: theme.textMuted,
-                        fontWeight: 600,
-                        border: "none",
-                    }}
-                    >
-                    {h}
-                    </th>
-                ))}
-                </tr>
-            </thead>
-              <tbody>
-                {filteredRooms.length > 0 ? (
-                  filteredRooms.map((room, index) => (
-                    <tr
-                      key={room.id}
-                      style={{
-                        transition: "all 0.3s ease",
-                        animation: `fadeInUp 0.4s ease-out ${index * 0.05}s both`,
-                        borderBottom: `1px solid ${theme.border}`,
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = theme.bgSecondary;
-                        e.currentTarget.style.transform = "scale(1.01)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.transform = "scale(1)";
-                      }}
-                    >
-                      <td className="py-3 px-4 align-middle">
-                        <div className="d-flex align-items-center gap-2">
-                          <Bed size={18} style={{ color: theme.btnPrimary }} />
-                          <span className="fw-semibold" style={{ color: theme.textPrimary }}>
-                            {room.roomNo}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 align-middle" style={{ color: theme.textPrimary }}>
-                        {room.type}
-                      </td>
-                      <td className="py-3 px-4 align-middle">
-                        <span 
-                          className="badge"
-                          style={{
-                            background: theme.bgLight,
-                            color: theme.textPrimary,
-                            fontWeight: "500",
-                          }}
-                        >
-                          {room.capacity} Person(s)
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 align-middle">
-                        <span
-                          className="badge"
-                          style={{
-                            padding: "6px 12px",
-                            borderRadius: "8px",
-                            fontWeight: "500",
-                            background: getStatusColor(room.status),
-                            color: "#ffffff",
-                          }}
-                        >
-                          {getStatusIcon(room.status)} {room.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 align-middle">
-                        <div className="d-flex gap-2">
-                          <button
-                            className="btn btn-sm btn-outline-primary"
-                          >
-                            <Pencil size={16} />
-                          </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => deleteRoom(room.id)}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="text-center py-5">
-                      <div style={{ color: theme.textMuted }}>
-                        <Bed size={48} className="mb-3" style={{ opacity: 0.25 }} />
-                        <p className="mb-0">No rooms found</p>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <div className="container">
+        {filteredRooms.length > 0 ? (
+          <RoomGrid
+            rooms={filteredRooms}
+            onDelete={(room) => deleteRoom(room.id)}
+          />
+        ) : (
+          <>NA</>
+        )}
       </div>
 
       {/* Add Room Modal */}
@@ -435,14 +370,17 @@ const Rooms = () => {
 
             <div className="modal-body p-4">
               <div className="mb-3">
-                <label className="form-label fw-semibold small" style={{ color: theme.textSecondary }}>
+                <label
+                  className="form-label fw-semibold small"
+                  style={{ color: theme.textSecondary }}
+                >
                   Room Number <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
                   name="roomNo"
                   className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
-                  placeholder="e.g., 101"
+                  placeholder="Enter room number"
                   value={formData.roomNo}
                   onChange={handleChange}
                   style={{
@@ -456,13 +394,18 @@ const Rooms = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold small" style={{ color: theme.textSecondary }}>
-                  Room Type <span className="text-danger">*</span>
+                <label
+                  className="form-label fw-semibold small"
+                  style={{ color: theme.textSecondary }}
+                >
+                  Room Rent(Per Person) <span className="text-danger">*</span>
                 </label>
-                <select
-                  name="type"
-                  className="form-select"
-                  value={formData.type}
+                <input
+                  type="number"
+                  name="rent"
+                  className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
+                  placeholder="Enter amount"
+                  value={formData.rent}
                   onChange={handleChange}
                   style={{
                     borderRadius: "10px",
@@ -471,17 +414,14 @@ const Rooms = () => {
                     background: theme.inputBg,
                     color: theme.inputText,
                   }}
-                >
-                  <option value="">Select Type</option>
-                  <option value="Single">Single</option>
-                  <option value="Double">Double</option>
-                  <option value="Triple">Triple</option>
-                  <option value="Quad">Quad</option>
-                </select>
+                />
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold small" style={{ color: theme.textSecondary }}>
+                <label
+                  className="form-label fw-semibold small"
+                  style={{ color: theme.textSecondary }}
+                >
                   Capacity <span className="text-danger">*</span>
                 </label>
                 <input
@@ -500,29 +440,6 @@ const Rooms = () => {
                     color: theme.inputText,
                   }}
                 />
-              </div>
-
-              <div className="mb-3">
-                <label className="form-label fw-semibold small" style={{ color: theme.textSecondary }}>
-                  Status
-                </label>
-                <select
-                  name="status"
-                  className="form-select"
-                  value={formData.status}
-                  onChange={handleChange}
-                  style={{
-                    borderRadius: "10px",
-                    border: `2px solid ${theme.border}`,
-                    padding: "12px",
-                    background: theme.inputBg,
-                    color: theme.inputText,
-                  }}
-                >
-                  <option value="Available">Available</option>
-                  <option value="Occupied">Occupied</option>
-                  <option value="Maintenance">Maintenance</option>
-                </select>
               </div>
             </div>
 

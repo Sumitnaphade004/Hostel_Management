@@ -10,7 +10,7 @@ const Room = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
-    room_no: {
+    roomNo: {
       type: DataTypes.STRING, 
       allowNull: false,
       unique: true,           
@@ -21,6 +21,10 @@ const Room = sequelize.define(
     },
     rent: {
       type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM("Available", "Occupied"),
       allowNull: false,
     },
   },

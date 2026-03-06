@@ -22,12 +22,12 @@ const Users = sequelize.define(
         isEmail: true,
       },
     },
-    phone_no: {
+    phoneNo: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    room_id: {
+    roomId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -43,7 +43,7 @@ const Users = sequelize.define(
 );
 
 // Associations
-Users.belongsTo(Rooms, { foreignKey: "room_id", as: "room" });
-Rooms.hasMany(Users, { foreignKey: "room_id", as: "users" });
+Users.belongsTo(Rooms, { foreignKey: "roomId", as: "room" });
+Rooms.hasMany(Users, { foreignKey: "roomId", as: "users" });
 
 module.exports = Users;

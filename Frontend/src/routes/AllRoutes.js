@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import AdminIndex from "../layouts/AdminIndex";
 import Dashboard from "../pages/Dashboard";
-import Rooms from "../pages/Room/AddRoom";
+import Rooms from "../pages/Room/ViewRoom";
 import AddMember from "../pages/Member/AddMember";
 import ViewMember from "../pages/Member/ViewMember";
 import ViewTransaction from "../pages/Transaction/ViewTransaction";

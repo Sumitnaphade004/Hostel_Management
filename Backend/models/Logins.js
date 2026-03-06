@@ -29,7 +29,7 @@ const Logins = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    phone_no: {
+    phoneNo: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,

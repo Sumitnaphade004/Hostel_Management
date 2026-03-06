@@ -8,15 +8,15 @@ const ProtectedRoute = () => {
   if (loading) {
     return (
       <>
-        <div class="d-flex justify-content-center align-items-center vh-100">
-          <div class="loader">
-            <div class="loader-square"></div>
-            <div class="loader-square"></div>
-            <div class="loader-square"></div>
-            <div class="loader-square"></div>
-            <div class="loader-square"></div>
-            <div class="loader-square"></div>
-            <div class="loader-square"></div>
+        <div className="d-flex justify-content-center align-items-center vh-100">
+          <div className="loader">
+            <div className="loader-square"></div>
+            <div className="loader-square"></div>
+            <div className="loader-square"></div>
+            <div className="loader-square"></div>
+            <div className="loader-square"></div>
+            <div className="loader-square"></div>
+            <div className="loader-square"></div>
           </div>
         </div>
         <style>
