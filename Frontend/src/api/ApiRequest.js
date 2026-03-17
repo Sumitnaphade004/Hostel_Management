@@ -1,4 +1,5 @@
 import BASE_URL from "./Api";
+import Swal from "sweetalert2";
 
 const apiRequest = async (endpoint, options = {}) => {
   try {
@@ -22,6 +23,11 @@ const apiRequest = async (endpoint, options = {}) => {
 
     return await response.json();
   } catch (error) {
+    Swal.fire({
+      icon: "Error",
+      title: "Server Error",
+      text: "Something went wrong.",
+    });
     console.error(`API error on ${endpoint}:`, error);
     throw error;
   }

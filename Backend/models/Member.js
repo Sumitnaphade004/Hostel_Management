@@ -28,7 +28,7 @@ const Members = sequelize.define(
       unique: true,
     },
     gender: {
-      type: DataTypes.ENUM("male", "female", "other"),
+      type: DataTypes.ENUM("Male", "Female", "Other"),
       allowNull: false,
     },
     dateOfBirth: {
@@ -70,6 +70,10 @@ const Members = sequelize.define(
     status: {
       type: DataTypes.ENUM("active", "inactive"),
       allowNull: false,
+    },
+    deposite: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
   },
   {

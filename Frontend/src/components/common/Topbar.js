@@ -22,7 +22,7 @@ const Topbar = () => {
     padding: "0 30px",
     marginLeft: !isCollapsed ? "230px" : "72px",
     borderBottom: `1px solid ${theme.topbarBorder}`,
-    transition: "all 0.3s ease",
+    transition: "all 0.4s ease",
   };
 
   return (

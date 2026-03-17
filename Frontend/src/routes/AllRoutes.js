@@ -8,6 +8,7 @@ import ViewTransaction from "../pages/Transaction/ViewTransaction";
 import AddTransaction from "../pages/Transaction/AddTransactions";
 import Login from "../pages/Login";
 import ProtectedRoute from "./ProtectedRoutes";
+import EditMember from "../pages/Member/EditMember";
 
 const AppRoutes = () => {
   return (
@@ -21,7 +22,8 @@ const AppRoutes = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/add-member" element={<AddMember />} />
-          <Route path="/view-member" element={<ViewMember />} />
+          <Route path="/members" element={<ViewMember />} />
+          <Route path="/edit-member/:id" element={<EditMember />} />
           <Route path="/view-transactions" element={<ViewTransaction />} />
           <Route path="/add-transactions" element={<AddTransaction />} />
         </Route>

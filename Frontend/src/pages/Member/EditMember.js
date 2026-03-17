@@ -4,8 +4,11 @@ import { useTheme } from "../../context/ThemeContext";
 import { HousePlus } from "lucide-react";
 import ApiRequest from "../../api/ApiRequest";
 import Swal from "sweetalert2";
+import { useParams } from "react-router-dom";
 
-const AddMember = () => {
+const EditMember = () => {
+  const { id } = useParams();
+
   const { theme, currentTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -33,12 +36,33 @@ const AddMember = () => {
       const res = await ApiRequest("/rooms");
       setRooms(res.allRooms);
     } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: "Something went wrong.",
+        icon: "error",
+      });
+      console.error(error);
+    }
+  };
+
+  const fetchMember = async () => {
+    try {
+      const res = await ApiRequest(`/edit-member/${id}`);
+      
+      setFormData(res.memberData);
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: "Something went wrong.",
+        icon: "error",
+      });
       console.error(error);
     }
   };
 
   useEffect(() => {
     fetchRooms();
+    fetchMember();
   }, []);
 
   const handleChange = (e) => {
@@ -65,7 +89,7 @@ const AddMember = () => {
         return;
       }
 
-      if(!/^[6-9]\d{9}$/.test(formData.phoneNo)){
+      if (!/^[6-9]\d{9}$/.test(formData.phoneNo)) {
         Swal.fire({
           icon: "warning",
           title: "Incorrect Phone Number",
@@ -73,13 +97,13 @@ const AddMember = () => {
         });
         return;
       }
-      
-      const response = await ApiRequest("/save-member", {
+
+      const response = await ApiRequest("/update-member", {
         method: "POST",
         body: formData,
       });
 
-      if(response?.success === false){
+      if (response?.success === false) {
         Swal.fire({
           icon: "warning",
           title: "Exists",
@@ -92,8 +116,8 @@ const AddMember = () => {
 
       Swal.fire({
         icon: "success",
-        title: "Member Added",
-        text: response.message || "Member added successfully",
+        title: "Member Details Updated.",
+        text: response.message || "Member updated successfully",
         timer: 2000,
         showConfirmButton: false,
       });
@@ -115,8 +139,13 @@ const AddMember = () => {
         deposite: ""
       });
 
-      navigate('/members');
+      navigate("/members");
     } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: "Something went wrong.",
+        icon: "error",
+      });
       console.error("Error: ", error);
     }
   };
@@ -145,7 +174,7 @@ const AddMember = () => {
           }}
         >
           <h4 className="mt-2" style={{ color: theme.textPrimary }}>
-            <HousePlus size={25} /> &nbsp; Hostel Member Registration
+            <HousePlus size={25} /> &nbsp; Edit Member
           </h4>
         </div>
 
@@ -170,7 +199,6 @@ const AddMember = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="form-control"
-                  required
                 />
               </div>
 
@@ -187,7 +215,6 @@ const AddMember = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="form-control"
-                  required
                 />
               </div>
 
@@ -207,7 +234,6 @@ const AddMember = () => {
                   value={formData.phoneNo}
                   onChange={handleChange}
                   className="form-control"
-                  required
                 />
               </div>
 
@@ -222,12 +248,11 @@ const AddMember = () => {
                   value={formData.gender}
                   onChange={handleChange}
                   className="form-select"
-                  required
                 >
                   <option value="">Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
                 </select>
               </div>
 
@@ -265,7 +290,6 @@ const AddMember = () => {
                 value={formData.address}
                 onChange={handleChange}
                 className="form-control"
-                required
               />
             </div>
 
@@ -328,7 +352,6 @@ const AddMember = () => {
                   value={formData.roomId}
                   onChange={handleChange}
                   className="form-select"
-                  required
                 >
                   <option value="">Select Room</option>
                   {rooms.map((room) => (
@@ -351,7 +374,6 @@ const AddMember = () => {
                   value={formData.dateOfJoining}
                   onChange={handleChange}
                   className="form-control"
-                  required
                 />
               </div>
 
@@ -415,7 +437,7 @@ const AddMember = () => {
                 padding: "10px",
               }}
             >
-              Register Member
+              Update Member
             </button>
           </form>
         </div>
@@ -424,4 +446,4 @@ const AddMember = () => {
   );
 };
 
-export default AddMember;
+export default EditMember;

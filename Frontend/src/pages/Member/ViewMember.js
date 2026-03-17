@@ -1,7 +1,17 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { Search, Calendar, User, Hash, Mail, PhoneCall } from "lucide-react"; // Optional: Use any icon library
+import {
+  Search,
+  Calendar,
+  SquarePen,
+  Trash2,
+  Mail,
+  PhoneCall,
+} from "lucide-react"; // Optional: Use any icon library
 import ApiRequest from "../../api/ApiRequest";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
 const ViewMembers = () => {
   const { theme, currentTheme } = useTheme();
   const [members, setMembers] = useState([]);
@@ -14,9 +24,16 @@ const ViewMembers = () => {
 
   const fetchMember = async () => {
     try {
-      const response = await ApiRequest("/all-member");
+      setLoading(true);
+      const response = await ApiRequest("/members");
       setMembers(response.members);
+      setLoading(false);
     } catch (error) {
+      Swal.fire({
+        icon: "Error",
+        title: "Server Error",
+        text: "Something went wrong.",
+      });
       console.error("Error: ", error);
     }
   };
@@ -42,6 +59,51 @@ const ViewMembers = () => {
       return matchesSearch && matchesDate;
     });
   }, [members, searchTerm, startDate, endDate]);
+
+  const navigate = useNavigate();
+
+
+  const handleEdit = async (id) => {
+    try {
+      navigate(`/edit-member/${id}`);
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: "Something went wrong.",
+        icon: "error",
+      });
+    }
+  }
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You want to delete this member!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await ApiRequest(`/delete-member/${id}`); 
+
+        Swal.fire({
+          title: "Deleted!",
+          text: "Record deleted successfully.",
+          icon: "success",
+        });
+
+        fetchMember();
+      } catch (error) {
+        Swal.fire({
+          title: "Error!",
+          text: "Something went wrong.",
+          icon: "error",
+        });
+      }
+    }
+  };
 
   return (
     <div
@@ -146,8 +208,9 @@ const ViewMembers = () => {
             >
               <thead style={{ background: theme.bgSecondary }}>
                 <tr>
-                  <th className="px-4 py-3 border-0">Member</th>
-                  <th className="py-3 border-0">Contact</th>
+                  <th className="px-4 py-3 border-0">ID</th>
+                  <th className="px-4 py-3 border-0">Name</th>
+                  <th className="py-3 border-0">Contact No</th>
                   <th className="py-3 border-0 text-center">Room</th>
                   <th className="py-3 border-0">Joined Date</th>
                   <th className="py-3 border-0">Status</th>
@@ -157,22 +220,23 @@ const ViewMembers = () => {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="5" className="text-center py-5">
+                    <td colSpan="7" className="text-center py-5">
                       Loading...
                     </td>
                   </tr>
                 ) : filteredMembers.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="text-center py-5 text-muted">
+                    <td colSpan="7" className="text-center py-5 text-muted">
                       No members match your criteria.
                     </td>
                   </tr>
                 ) : (
-                  filteredMembers.map((member) => (
+                  filteredMembers.map((member, index) => (
                     <tr
                       key={member.id}
                       style={{ borderBottom: `1px solid ${theme.border}` }}
                     >
+                      <td className="px-4 py-2">{index + 1}</td>
                       <td className="px-4 py-2">
                         <div className="d-flex align-items-center">
                           <div
@@ -203,17 +267,20 @@ const ViewMembers = () => {
                           style={{ color: theme.textPrimary }}
                         >
                           <PhoneCall size={16} className="me-2 text-success" />{" "}
-                          {member.phoneNo}
+                          +91 {member.phoneNo}
                         </div>
                       </td>
                       <td className="py-2 text-center">
-                        <span className="badge rounded-pill bg-info text-dark px-3">
-                          {member.room ? `Room ${member.room.room_no}` : "N/A"}
+                        <span className="badge rounded-pill bg-info-subtle text-dark px-3">
+                          {member.room ? `Room ${member.room.roomNo}` : "N/A"}
                         </span>
                       </td>
                       <td className="py-2" style={{ color: theme.textPrimary }}>
-                        <Calendar size={14} className="me-2" />
-                        {new Date(member.createdAt).toLocaleDateString()}
+                        <Calendar size={14} className="me-2 text-info" />
+                        {new Date(member.createdAt).toLocaleDateString(
+                          "en-IN",
+                          { day: "2-digit", month: "2-digit", year: "numeric" },
+                        )}
                       </td>
                       <td className="py-2" style={{ color: theme.textPrimary }}>
                         <span
@@ -223,9 +290,13 @@ const ViewMembers = () => {
                         </span>
                       </td>
                       <td className="py-2 text-end px-4">
-                        <button className="btn btn-sm btn-outline-primary rounded-pill px-3">
-                          View Profile
-                        </button>
+                        <SquarePen size={20} className="me-2 text-success" style={{ cursor: "pointer" }} onClick={() => handleEdit(member.id)} />
+                        <Trash2
+                          size={20}
+                          className="me-2 text-danger cursor-pointer"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleDelete(member.id)}
+                        />
                       </td>
                     </tr>
                   ))

@@ -33,7 +33,7 @@ const Rooms = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await ApiRequest("/all-rooms");
+      const res = await ApiRequest("/rooms");
       setRooms(res.allRooms);
     } catch (error) {
       console.error(error);
