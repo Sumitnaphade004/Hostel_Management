@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import {
-  Bed,
   Plus,
-  Pencil,
-  Trash2,
   Search,
   Filter,
   Home,
@@ -13,7 +11,6 @@ import {
 import { useTheme } from "../../context/ThemeContext";
 import ApiRequest from "../../api/ApiRequest";
 import RoomGrid from "./RoomGrid";
-import Alert from "../../components/common/Alert";
 
 const Rooms = () => {
   const { theme, currentTheme } = useTheme();
@@ -47,16 +44,39 @@ const Rooms = () => {
     fetchRooms();
   }, []);
 
-  const addRoom = () => {
+  const addRoom = async () => {
     try {
       if (!formData.roomNo || !formData.rent || !formData.capacity) {
-        Alert("Please fill all required fields", "danger");
+        Swal.fire({
+          icon: "warning",
+          title: "Missing Fields",
+          text: "Please fill all required fields",
+        });
         return;
       }
 
-      ApiRequest("/save-room", {
+      const response = await ApiRequest("/save-room", {
         method: "POST",
         body: formData,
+      });
+
+      console.log(response);
+
+      if (response?.success === false) {
+        Swal.fire({
+          icon: "warning",
+          title: "Exists",
+          text: response.message || "Room already exists",
+        });
+        return;
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Room Added",
+        text: response.message || "Room added successfully",
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       setFormData({
@@ -68,9 +88,16 @@ const Rooms = () => {
       const modal = window.bootstrap.Modal.getInstance(
         document.getElementById("addRoomModal"),
       );
+
       modal.hide();
+
       fetchRooms();
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Server Error",
+        text: "Something went wrong!",
+      });
       console.error(error);
     }
   };
@@ -80,7 +107,6 @@ const Rooms = () => {
       setRooms(rooms.filter((room) => room.id !== id));
     }
   };
-
 
   const filteredRooms = rooms.filter((room) => {
     const matchesSearch = room.roomNo
@@ -321,6 +347,7 @@ const Rooms = () => {
         </div>
       </div>
 
+      {/* All Rooms */}
       <div className="container">
         {filteredRooms.length > 0 ? (
           <RoomGrid
@@ -328,7 +355,9 @@ const Rooms = () => {
             onDelete={(room) => deleteRoom(room.id)}
           />
         ) : (
-          <>NA</>
+          <p className="mb-0" style={{ color: theme.textSecondary }}>
+            No rooms avilable please add the rooms.
+          </p>
         )}
       </div>
 

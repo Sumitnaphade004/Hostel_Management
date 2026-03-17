@@ -31,15 +31,14 @@ class AuthController {
         name: user.name,
         role: user.role,
         email: user.email,
-      };
+      };  
 
       const token = generateToken(payload);
 
       res.cookie("token", token, {
         httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-        secure: false,
-        sameSite: "Lax",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000,
         path: '/'
       });

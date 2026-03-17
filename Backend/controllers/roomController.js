@@ -8,21 +8,19 @@ class RoomController {
       const existingRoom = await Room.findOne({
         where: { roomNo: body.roomNo },
       });
-
+      
       if (existingRoom) {
-        res.status(
-          res.status(409).json({
-            success: false,
-            message: "Room number already exists",
-          }),
-        );
+        return res.status(200).json({
+          success: false,
+          message: "Room number already exists",
+        });
       }
 
       await Room.create(body);
 
       res.status(200).json({ message: "Room data stored successfully." });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Error while saving the room:", error);
       res.status(500).json({ message: "Internal Server Error." });
     }
   }

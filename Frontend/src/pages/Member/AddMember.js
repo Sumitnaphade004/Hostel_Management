@@ -1,66 +1,121 @@
-import React, { useEffect, useState } from "react";
-// import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
+import { HousePlus } from "lucide-react";
+import ApiRequest from "../../api/ApiRequest";
+import Swal from "sweetalert2";
 
 const AddMember = () => {
-  const { theme } = useTheme();
+  const { theme, currentTheme } = useTheme();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone_no: "",
-    room_id: "",
+    phoneNo: "",
+    gender: "",
+    dateOfBirth: "",
+    address: "",
+    guardianName: "",
+    emergencyContact: "",
+    idProofType: "",
+    idProofNumber: "",
+    roomId: "",
+    dateOfJoining: "",
+    status: "active"
   });
 
   const [rooms, setRooms] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  // 🔹 Fetch rooms
-  // useEffect(() => {
-  //   const fetchRooms = async () => {
-  //     try {
-  //       const res = await axios.get("http://localhost:12000/api/rooms");
-  //       setRooms(res.data);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-  //   fetchRooms();
-  // }, []);
+  const fetchRooms = async () => {
+    try {
+      const res = await ApiRequest("/all-rooms");
+      setRooms(res.allRooms);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  // 🔹 Handle change
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🔹 Submit
   const handleSubmit = async (e) => {
-    // e.preventDefault();
-    // setLoading(true);
-    // setError("");
+    try {
+      e.preventDefault();
+      if (
+        !formData.name ||
+        !formData.email ||
+        !formData.phoneNo ||
+        !formData.gender ||
+        !formData.address ||
+        !formData.roomId ||
+        !formData.dateOfJoining ||
+        !formData.idProofType ||
+        !formData.idProofNumber
+      ) {
+        Swal.fire({
+          icon: "warning",
+          title: "Missing Fields",
+          text: "Please fill all required fields",
+        });
+        return;
+      }
 
-    // try {
-    //   await axios.post("http://localhost:12000/api/users", formData);
-    //   alert("Member added successfully ✅");
+      const response = await ApiRequest("/save-member", {
+        method: "POST",
+        body: formData,
+      });
 
-    //   setFormData({
-    //     name: "",
-    //     email: "",
-    //     phone_no: "",
-    //     room_id: "",
-    //   });
-    // } catch (err) {
-    //   setError(err.response?.data?.message || "Something went wrong");
-    // } finally {
-    //   setLoading(false);
-    // }
+      if(response?.success === false){
+        Swal.fire({
+          icon: "warning",
+          title: "Exists",
+          text: response.message || "Member already exists.",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        return;
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Member Added",
+        text: response.message || "Member added successfully",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        phoneNo: "",
+        gender: "",
+        dateOfBirth: "",
+        address: "",
+        guardianName: "",
+        emergencyContact: "",
+        idProofType: "",
+        idProofNumber: "",
+        roomId: "",
+        dateOfJoining: "",
+        status: "active"
+      });
+
+      navigate('/view-member');
+    } catch (error) {
+      console.error("Error: ", error);
+    }
   };
 
   return (
     <div
       className="container-fluid py-4"
-      style={{ background: theme.containerBg, minHeight: "100vh" }}
+      style={{ background: theme.containerBg }}
     >
       <div
         className="card"
@@ -68,7 +123,7 @@ const AddMember = () => {
           background: theme.cardBg,
           border: `1px solid ${theme.border}`,
           boxShadow: theme.cardShadow,
-          maxWidth: "600px",
+          maxWidth: "850px",
           margin: "0 auto",
         }}
       >
@@ -80,136 +135,251 @@ const AddMember = () => {
             borderBottom: `1px solid ${theme.border}`,
           }}
         >
-          <h5 className="mb-0" style={{ color: theme.textPrimary }}>
-            Add Member
-          </h5>
+          <h4 className="mt-2" style={{ color: theme.textPrimary }}>
+            <HousePlus size={25} /> &nbsp; Hostel Member Registration
+          </h4>
         </div>
 
-        {/* Body */}
         <div className="card-body">
-          {error && (
-            <div
-              className="alert"
-              style={{
-                background: theme.danger,
-                color: "#fff",
-                border: "none",
-              }}
-            >
-              {error}
-            </div>
-          )}
-
           <form onSubmit={handleSubmit}>
-            {/* Name */}
+            {/* Personal Info */}
+            <h6 style={{ color: theme.textSecondary }} className="mb-3">
+              Personal Information
+            </h6>
+
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Full Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Enter full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Email <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Phone <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="phoneNo"
+                  pattern="^[6-9]\d{9}$"
+                  placeholder="Enter phone number"
+                  value={formData.phoneNo}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="col-md-3 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Gender <span className="text-danger">*</span>
+                </label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="form-select"
+                >
+                  <option value="">Select</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div className="col-md-3 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Date of Birth
+                </label>
+                <input
+                  type="date"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
+            </div>
+
+            {/* Address */}
+            <h6 className="mt-4 mb-3" style={{ color: theme.textSecondary }}>
+              Address Details
+            </h6>
+
             <div className="mb-3">
               <label
-                className="form-label"
-                style={{ color: theme.textSecondary }}
+                className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
               >
-                Name
+                Address <span className="text-danger">*</span>
               </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
+              <textarea
+                name="address"
+                rows="2"
+                placeholder="Enter full address"
+                value={formData.address}
                 onChange={handleChange}
-                required
                 className="form-control"
-                style={{
-                  background: theme.inputBg,
-                  color: theme.inputText,
-                  border: `1px solid ${theme.inputBorder}`,
-                }}
               />
             </div>
 
-            {/* Email */}
-            <div className="mb-3">
-              <label
-                className="form-label"
-                style={{ color: theme.textSecondary }}
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="form-control"
-                style={{
-                  background: theme.inputBg,
-                  color: theme.inputText,
-                  border: `1px solid ${theme.inputBorder}`,
-                }}
-              />
+            {/* ID Proof */}
+            <h6 className="mt-4 mb-3" style={{ color: theme.textSecondary }}>
+              Identity Proof
+            </h6>
+
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  ID Type <span className="text-danger">*</span>
+                </label>
+                <select
+                  name="idProofType"
+                  value={formData.idProofType}
+                  onChange={handleChange}
+                  className="form-select"
+                >
+                  <option value="">Select</option>
+                  <option>Aadhar Card</option>
+                  <option>PAN Card</option>
+                  <option>Passport</option>
+                  <option>Driving License</option>
+                </select>
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  ID Number <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="idProofNumber"
+                  value={formData.idProofNumber}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
             </div>
 
-            {/* Phone */}
-            <div className="mb-3">
-              <label
-                className="form-label"
-                style={{ color: theme.textSecondary }}
-              >
-                Phone No
-              </label>
-              <input
-                type="text"
-                name="phone_no"
-                value={formData.phone_no}
-                onChange={handleChange}
-                required
-                className="form-control"
-                style={{
-                  background: theme.inputBg,
-                  color: theme.inputText,
-                  border: `1px solid ${theme.inputBorder}`,
-                }}
-              />
-            </div>
+            {/* Hostel Info */}
+            <h6 className="mt-4 mb-3" style={{ color: theme.textSecondary }}>
+              Hostel Information
+            </h6>
 
-            {/* Room */}
-            <div className="mb-4">
-              <label
-                className="form-label"
-                style={{ color: theme.textSecondary }}
-              >
-                Room
-              </label>
-              <select
-                name="room_id"
-                value={formData.room_id}
-                onChange={handleChange}
-                required
-                className="form-select"
-                style={{
-                  background: theme.inputBg,
-                  color: theme.inputText,
-                  border: `1px solid ${theme.inputBorder}`,
-                }}
-              >
-                <option value="">Select Room</option>
-                {rooms.map((room) => (
-                  <option key={room.id} value={room.id}>
-                    Room {room.room_no || room.id}
-                  </option>
-                ))}
-              </select>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Room <span className="text-danger">*</span>
+                </label>
+                <select
+                  name="roomId"
+                  value={formData.roomId}
+                  onChange={handleChange}
+                  className="form-select"
+                >
+                  <option value="">Select Room</option>
+                  {rooms.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      Room {room.roomNo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Joining Date <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="dateOfJoining"
+                  value={formData.dateOfJoining}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Guardian Name
+                </label>
+                <input
+                  type="text"
+                  name="guardianName"
+                  value={formData.guardianName}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  Emergency Contact
+                </label>
+                <input
+                  type="text"
+                  name="emergencyContact"
+                  value={formData.emergencyContact}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
             </div>
 
             {/* Button */}
             <button
-              className="btn w-100"
-              disabled={loading}
+              className="btn w-100 mt-3"
               style={{
                 background: theme.btnPrimary,
                 color: "#fff",
                 border: "none",
+                fontWeight: "500",
+                padding: "10px",
               }}
             >
-              {loading ? "Saving..." : "Add Member"}
+              Register Member
             </button>
           </form>
         </div>

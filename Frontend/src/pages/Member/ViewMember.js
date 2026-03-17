@@ -1,112 +1,257 @@
-import React, { useEffect, useState } from "react";
-// import axios from "axios";
+import React, { useEffect, useState, useMemo } from "react";
 import { useTheme } from "../../context/ThemeContext";
-
+import { Search, Calendar, User, Hash, Mail, PhoneCall } from "lucide-react"; // Optional: Use any icon library
+import ApiRequest from "../../api/ApiRequest";
 const ViewMembers = () => {
   const { theme, currentTheme } = useTheme();
-  const [members, setMembers] = useState([{id: 1, name: "Sumit", email: "abc@gmail.com", phone_no: 9877899879, room: {room_no: 1} }, {id: 2, name: "Sumit", email: "abc@gmail.com", phone_no: 9877899879, room: {room_no: 1} }]);
-  const [loading, setLoading] = useState(true);
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   fetchMembers()
-  // }, []);
+  // Filter States
+  const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  // const fetchMembers = async () => {
-  //   try {
-  //     const res = await axios.get("http://localhost:12000/api/users");
-  //     setMembers(res.data);
-  //   } catch (err) {
-  //     console.error("Failed to fetch members", err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const fetchMember = async () => {
+    try {
+      const response = await ApiRequest("/all-member");
+      setMembers(response.members);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMember();
+  }, []);
+
+  // Filter Logic
+  const filteredMembers = useMemo(() => {
+    return members.filter((m) => {
+      const matchesSearch =
+        m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        m.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const memberDate = new Date(m.createdAt);
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      const matchesDate =
+        (!start || memberDate >= start) && (!end || memberDate <= end);
+
+      return matchesSearch && matchesDate;
+    });
+  }, [members, searchTerm, startDate, endDate]);
 
   return (
     <div
-      className="container-fluid py-4"
+      className="container-fluid py-3"
       style={{ background: theme.containerBg, minHeight: "100vh" }}
     >
-      <div
-        className="card"
-        style={{
-          background: theme.cardBg,
-          border: `1px solid ${theme.border}`,
-          boxShadow: theme.cardShadow,
-        }}
-      >
-        {/* Header */}
-        <div 
-          className={`card-header d-flex justify-content-between align-items-center bg-${currentTheme !== "light" ? "light" : "dark"}`}
+      <div className="container">
+        {/* Header & Filter Section */}
+        <div
+          className="card border-0 mb-4"
           style={{
-            background: theme.bgSecondary,
-            borderBottom: `1px solid ${theme.border}`,
+            background: theme.cardBg,
+            boxShadow: theme.cardShadow,
+            borderRadius: "15px",
           }}
         >
-          <h5 className={`mb-0 text-${currentTheme === "light" ? "light" : "dark"}`} style={{ color: theme.textPrimary }}>
-            Members List
-          </h5>
+          <div className="card-body p-4">
+            <div className="row align-items-center g-3">
+              <div className="col-md-4">
+                <h3
+                  className="mb-0 fw-bold"
+                  style={{ color: theme.textPrimary }}
+                >
+                  Members Directory
+                </h3>
+                <p
+                  className=" small mb-0"
+                  style={{ color: theme.textSecondary }}
+                >
+                  Manage and monitor your hostel members
+                </p>
+              </div>
+
+              {/* Search Bar */}
+              <div className="col-md-8">
+                <div className="row g-2">
+                  <div className="col-md-6">
+                    <div className="input-group">
+                      <span
+                        className="input-group-text border-1"
+                        style={{ background: theme.bgSecondary }}
+                      >
+                        <Search
+                          size={18}
+                          style={{ color: theme.textSecondary }}
+                        />
+                      </span>
+                      <input
+                        type="text"
+                        className={`form-control border-1 shadow-none themed-input-${currentTheme === "light" ? "light" : "dark"}`}
+                        placeholder="Search by name or email..."
+                        style={{
+                          background: theme.bgSecondary,
+                          color: theme.textPrimary,
+                        }}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  {/* Date Filters */}
+                  <div className="col-md-3">
+                    <input
+                      type="date"
+                      className={`form-control border-1 shadow-none ${currentTheme === "dark" ? "date-dark" : "date-light"}`}
+                      style={{
+                        background: theme.bgSecondary,
+                        color: theme.textPrimary,
+                      }}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <input
+                      type="date"
+                      className={`form-control border-1 shadow-none ${currentTheme === "dark" ? "date-dark" : "date-light"}`}
+                      style={{
+                        background: theme.bgSecondary,
+                        color: theme.textPrimary,
+                      }}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Body */}
-        <div className="card-body p-0">
-          {!loading ? (
-            <div className="text-center py-4" style={{ color: theme.textMuted }}>
-              Loading members...
-            </div>
-          ) : members.length === 0 ? (
-            <div className="text-center py-4" style={{ color: theme.textMuted }}>
-              No members found
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <table
-                className={`table mb-0 table-${
-                  currentTheme === "light" ? "light" : "dark"
-                }`}
-              >
-                <thead style={{ background: theme.bgSecondary }}>
+        {/* Table/List Section */}
+        <div
+          className="card border-0 shadow-sm"
+          style={{
+            background: theme.cardBg,
+            borderRadius: "15px",
+            overflow: "hidden",
+          }}
+        >
+          <div className="table-responsive">
+            <table
+              className={`table mb-0 align-middle ${currentTheme === "dark" ? "table-dark table-hover" : "table-light table-hover"}`}
+            >
+              <thead style={{ background: theme.bgSecondary }}>
+                <tr>
+                  <th className="px-4 py-3 border-0">Member</th>
+                  <th className="py-3 border-0">Contact</th>
+                  <th className="py-3 border-0 text-center">Room</th>
+                  <th className="py-3 border-0">Joined Date</th>
+                  <th className="py-3 border-0">Status</th>
+                  <th className="py-3 border-0 text-end px-4">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
                   <tr>
-                    <th style={{ color: theme.textPrimary }}>#</th>
-                    <th style={{ color: theme.textPrimary }}>Name</th>
-                    <th style={{ color: theme.textPrimary }}>Email</th>
-                    <th style={{ color: theme.textPrimary }}>Phone</th>
-                    <th style={{ color: theme.textPrimary }}>Room</th>
-                    <th style={{ color: theme.textPrimary }}>Created At</th>
+                    <td colSpan="5" className="text-center py-5">
+                      Loading...
+                    </td>
                   </tr>
-                </thead>
-
-                <tbody>
-                  {members.map((member, index) => (
-                    <tr key={member.id}>
-                      <td style={{ color: theme.textSecondary }}>
-                        {index + 1}
+                ) : filteredMembers.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-5 text-muted">
+                      No members match your criteria.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredMembers.map((member) => (
+                    <tr
+                      key={member.id}
+                      style={{ borderBottom: `1px solid ${theme.border}` }}
+                    >
+                      <td className="px-4 py-2">
+                        <div className="d-flex align-items-center">
+                          <div
+                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                            style={{ width: "40px", height: "40px" }}
+                          >
+                            {member.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div
+                              className="fw-bold"
+                              style={{ color: theme.textPrimary }}
+                            >
+                              {member.name}
+                            </div>
+                            <div
+                              className="small"
+                              style={{ color: theme.textSecondary }}
+                            >
+                              {member.email}
+                            </div>
+                          </div>
+                        </div>
                       </td>
-                      <td style={{ color: theme.textPrimary }}>
-                        {member.name}
+                      <td className="py-2">
+                        <div
+                          className="small"
+                          style={{ color: theme.textPrimary }}
+                        >
+                          <PhoneCall size={16} className="me-2 text-success" />{" "}
+                          {member.phoneNo}
+                        </div>
                       </td>
-                      <td style={{ color: theme.textSecondary }}>
-                        {member.email}
+                      <td className="py-2 text-center">
+                        <span className="badge rounded-pill bg-info text-dark px-3">
+                          {member.room ? `Room ${member.room.room_no}` : "N/A"}
+                        </span>
                       </td>
-                      <td style={{ color: theme.textSecondary }}>
-                        {member.phone_no}
-                      </td>
-                      <td style={{ color: theme.textSecondary }}>
-                        {member.room
-                          ? `Room ${member.room.room_no || member.room.id}`
-                          : "—"}
-                      </td>
-                      <td style={{ color: theme.textMuted }}>
+                      <td className="py-2" style={{ color: theme.textPrimary }}>
+                        <Calendar size={14} className="me-2" />
                         {new Date(member.createdAt).toLocaleDateString()}
                       </td>
+                      <td className="py-2" style={{ color: theme.textPrimary }}>
+                        <span
+                          className={`badge bg-${member.status === "active" ? "success" : "danger"} px-3`}
+                        >
+                          {member.status ? member.status : "N/A"}
+                        </span>
+                      </td>
+                      <td className="py-2 text-end px-4">
+                        <button className="btn btn-sm btn-outline-primary rounded-pill px-3">
+                          View Profile
+                        </button>
+                      </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+      <style>{`
+        .themed-input-light::placeholder {
+          color: ${theme.textSecondary};
+        }
+
+        .themed-input-dark::placeholder {
+          color: ${theme.textSecondary};
+        }
+
+        .date-dark::-webkit-calendar-picker-indicator {
+          filter: invert(1);
+        }
+
+        .date-light::-webkit-calendar-picker-indicator {
+          filter: invert(0);
+        }
+      `}</style>
     </div>
   );
 };

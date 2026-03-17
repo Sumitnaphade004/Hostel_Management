@@ -7,7 +7,7 @@ function Footer() {
     <footer
     className="mt-auto py-3"
     style={{
-        marginLeft: isCollapsed ? "80px" : "220px",
+        marginLeft: isCollapsed ? "70px" : "230px",
         background: theme.footerBg,
         color: theme.footerText,
         borderTopWidth: "2px",

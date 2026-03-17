@@ -20,7 +20,7 @@ const Topbar = () => {
     justifyContent: "space-between",
     alignItems: "center",
     padding: "0 30px",
-    marginLeft: !isCollapsed ? "220px" : "80px",
+    marginLeft: !isCollapsed ? "230px" : "72px",
     borderBottom: `1px solid ${theme.topbarBorder}`,
     transition: "all 0.3s ease",
   };
