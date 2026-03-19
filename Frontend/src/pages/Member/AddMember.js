@@ -30,7 +30,7 @@ const AddMember = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await ApiRequest("/rooms");
+      const res = await ApiRequest("/rooms?status=Available");
       setRooms(res.allRooms);
     } catch (error) {
       console.error(error);
@@ -332,8 +332,8 @@ const AddMember = () => {
                 >
                   <option value="">Select Room</option>
                   {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      Room {room.roomNo}
+                    <option key={room.id} value={room.id} className={`text-${room.status==="Available" ? "success" : "danger"}`}>
+                      Room {room.roomNo} [{room.status}]
                     </option>
                   ))}
                 </select>

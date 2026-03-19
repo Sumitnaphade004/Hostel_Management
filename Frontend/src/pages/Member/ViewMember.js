@@ -4,7 +4,7 @@ import {
   Search,
   Calendar,
   SquarePen,
-  Trash2,
+  UserX,
   Mail,
   PhoneCall,
 } from "lucide-react"; // Optional: Use any icon library
@@ -78,19 +78,19 @@ const ViewMembers = () => {
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "You want to delete this member!",
+      text: "You want to make this member inactive!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Yes, do it!",
     });
 
     if (result.isConfirmed) {
       try {
-        await ApiRequest(`/delete-member/${id}`); 
+        await ApiRequest(`/member-deactivate/${id}`); 
 
         Swal.fire({
-          title: "Deleted!",
-          text: "Record deleted successfully.",
+          title: "Deactivated!",
+          text: "Member status updated to inactive.",
           icon: "success",
         });
 
@@ -256,7 +256,7 @@ const ViewMembers = () => {
                               className="small"
                               style={{ color: theme.textSecondary }}
                             >
-                              {member.email}
+                              <Mail size={13} className="me-1 text-warning" />{member.email}
                             </div>
                           </div>
                         </div>
@@ -291,7 +291,7 @@ const ViewMembers = () => {
                       </td>
                       <td className="py-2 text-end px-4">
                         <SquarePen size={20} className="me-2 text-success" style={{ cursor: "pointer" }} onClick={() => handleEdit(member.id)} />
-                        <Trash2
+                        <UserX
                           size={20}
                           className="me-2 text-danger cursor-pointer"
                           style={{ cursor: "pointer" }}

@@ -293,7 +293,7 @@ const Sidebar = () => {
         className="d-flex flex-column position-fixed sidebar-root"
         style={{
           width: isCollapsed ? "72px" : "230px",
-          height: "100vh",
+          minHeight: "100vh",
           background: theme.sidebarBg || "linear-gradient(180deg, #0f1724 0%, #111827 100%)",
           color: theme.sidebarText,
           borderRight: `1px solid rgba(255,255,255,0.06)`,

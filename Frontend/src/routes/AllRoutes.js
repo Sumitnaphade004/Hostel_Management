@@ -9,6 +9,7 @@ import AddTransaction from "../pages/Transaction/AddTransactions";
 import Login from "../pages/Login";
 import ProtectedRoute from "./ProtectedRoutes";
 import EditMember from "../pages/Member/EditMember";
+import RoomProfile from "../pages/Room/RoomProfile";
 
 const AppRoutes = () => {
   return (
@@ -21,6 +22,7 @@ const AppRoutes = () => {
         <Route element={<AdminIndex />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/rooms" element={<Rooms />} />
+          <Route path="/room-profile" element={<RoomProfile />} />
           <Route path="/add-member" element={<AddMember />} />
           <Route path="/members" element={<ViewMember />} />
           <Route path="/edit-member/:id" element={<EditMember />} />

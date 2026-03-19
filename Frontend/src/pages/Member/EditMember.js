@@ -66,7 +66,12 @@ const EditMember = () => {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: name === "roomId" ? parseInt(value) || "" : value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -116,7 +121,7 @@ const EditMember = () => {
 
       Swal.fire({
         icon: "success",
-        title: "Member Details Updated.",
+        title:  response.title || "Member Details Updated.",
         text: response.message || "Member updated successfully",
         timer: 2000,
         showConfirmButton: false,
@@ -355,8 +360,8 @@ const EditMember = () => {
                 >
                   <option value="">Select Room</option>
                   {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      Room {room.roomNo}
+                    <option key={room.id} value={room.id} className={`text-${room.status==="Available" ? "success" : "danger"}`}>
+                      Room {room.roomNo} [{room.status}]
                     </option>
                   ))}
                 </select>

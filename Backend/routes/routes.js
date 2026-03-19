@@ -17,13 +17,14 @@ router.get('/me', authMiddleware, AuthController.loggedInUser);
 // ------------------------------------------------------------------ Room ------------------------------------------------------------------
 router.post('/save-room', authMiddleware, RoomController.saveRoom);
 router.get('/rooms', authMiddleware, RoomController.allRooms);
+router.get('/room-profile', authMiddleware, RoomController.roomProfile);
 
 // ------------------------------------------------------------------ Member ------------------------------------------------------------------
 router.post('/save-member', authMiddleware, MemberController.saveMember);
 router.get('/edit-member/:id', authMiddleware, MemberController.editMember);
 router.post('/update-member', authMiddleware, MemberController.updateMember);
 router.get('/members', authMiddleware, MemberController.allMembers);
-router.get('/delete-member/:id', authMiddleware, MemberController.deleteMember);
+router.get('/member-deactivate/:id', authMiddleware, MemberController.deactivateMember);
 
 
 module.exports = router;

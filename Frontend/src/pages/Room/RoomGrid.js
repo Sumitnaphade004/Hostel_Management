@@ -1,5 +1,6 @@
 import { Bed, Pencil, Trash2, Users, CheckCircle, XCircle } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 // ── Single Room Card ──────────────────────────────────────────
 const RoomCard = ({ room, onEdit, onDelete }) => {
@@ -7,8 +8,16 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
   const isAvailable = status?.toLowerCase() === "available";
   const { theme } = useTheme();
 
+  const navigate = useNavigate();
+  const handleNavigation = ()=>{
+    try {
+      navigate("/room-profile");
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  }
   return (
-    <div className="room-card">
+    <div className="room-card" onClick={handleNavigation}>
       {/* Status badge */}
       <span
         className={`status-badge ${isAvailable ? "badge-available" : "badge-occupied"}`}
