@@ -11,16 +11,17 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
   const navigate = useNavigate();
   const handleNavigation = ()=>{
     try {
-      navigate("/room-profile");
+      navigate(`/room-profile/${id}`);
     } catch (error) {
       console.error("Error: ", error);
     }
   }
   return (
-    <div className="room-card" onClick={handleNavigation}>
+    <div className="room-card">
       {/* Status badge */}
       <span
         className={`status-badge ${isAvailable ? "badge-available" : "badge-occupied"}`}
+        onClick={handleNavigation}
       >
         {isAvailable ? (
           <>
@@ -34,13 +35,13 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
       </span>
 
       {/* Room icon + number */}
-      <div className="room-icon-wrap">
+      <div className="room-icon-wrap" onClick={handleNavigation}>
         <Bed size={32} strokeWidth={1.4} />
       </div>
-      <div className="room-number">Room {roomNo}</div>
+      <div className="room-number" onClick={handleNavigation}>Room {roomNo}</div>
 
       {/* Info row */}
-      <div className="room-info">
+      <div className="room-info" onClick={handleNavigation}>
         <div className="info-chip">
           <Users size={13} />
           <span>Capacity: {capacity}</span>
@@ -51,7 +52,7 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
       <div className="room-actions">
         <button
           className="action-btn btn-edit"
-          onClick={() => onEdit?.(room)}
+           onClick={() => onEdit(room)}
           title="Edit"
         >
           <Pencil size={14} />

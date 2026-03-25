@@ -11,24 +11,28 @@ import {
 import { useTheme } from "../../context/ThemeContext";
 import ApiRequest from "../../api/ApiRequest";
 import RoomGrid from "./RoomGrid";
+import RoomForm from "../Room/RoomForm";
 
 const Rooms = () => {
   const { theme, currentTheme } = useTheme();
 
   const [rooms, setRooms] = useState([]);
 
-  const [formData, setFormData] = useState({
-    roomNo: "",
-    capacity: "",
-    rent: "",
-    status: "Available",
-  });
-
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [isEdit, setIsEdit] = useState(false);
+
+  const handleEdit = (room) => {
+    console.log(room)
+    setSelectedRoom(room);
+    setIsEdit(true);
+
+    const modal = new window.bootstrap.Modal(
+      document.getElementById("addRoomModal")
+    );
+    modal.show();
   };
 
   const fetchRooms = async () => {
@@ -44,9 +48,9 @@ const Rooms = () => {
     fetchRooms();
   }, []);
 
-  const addRoom = async () => {
+  const addRoom = async (data) => {
     try {
-      if (!formData.roomNo || !formData.rent || !formData.capacity) {
+      if (!data.roomNo || !data.rent || !data.capacity) {
         Swal.fire({
           icon: "warning",
           title: "Missing Fields",
@@ -57,10 +61,8 @@ const Rooms = () => {
 
       const response = await ApiRequest("/save-room", {
         method: "POST",
-        body: formData,
+        body: data,
       });
-
-      console.log(response);
 
       if (response?.success === false) {
         Swal.fire({
@@ -79,10 +81,55 @@ const Rooms = () => {
         showConfirmButton: false,
       });
 
-      setFormData({
-        roomNo: "",
-        rent: "",
-        capacity: "",
+      const modal = window.bootstrap.Modal.getInstance(
+        document.getElementById("addRoomModal"),
+      );
+
+      modal.hide();
+
+      fetchRooms();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Server Error",
+        text: "Something went wrong!",
+      });
+      console.error(error);
+    }
+  };
+
+
+  const updateRoom = async (data) => {
+    try {
+      if (!data.roomNo || !data.rent || !data.capacity) {
+        Swal.fire({
+          icon: "warning",
+          title: "Missing Fields",
+          text: "Please fill all required fields",
+        });
+        return;
+      }
+
+      const response = await ApiRequest("/update-room", {
+        method: "POST",
+        body: data,
+      });
+
+      if (response?.success === false) {
+        Swal.fire({
+          icon: "warning",
+          title: "Exists",
+          text: response.message || "Room not exists",
+        });
+        return;
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Room Updated",
+        text: response.message || "Room updated successfully",
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       const modal = window.bootstrap.Modal.getInstance(
@@ -154,6 +201,10 @@ const Rooms = () => {
               className="btn d-flex align-items-center gap-2 shadow-sm"
               data-bs-toggle="modal"
               data-bs-target="#addRoomModal"
+              onClick={() => {
+                setIsEdit(false);       
+                setSelectedRoom(null);   
+              }}
               style={{
                 borderRadius: "10px",
                 padding: "12px 24px",
@@ -352,6 +403,7 @@ const Rooms = () => {
         {filteredRooms.length > 0 ? (
           <RoomGrid
             rooms={filteredRooms}
+            onEdit={(room) => handleEdit(room)}
             onDelete={(room) => deleteRoom(room.id)}
           />
         ) : (
@@ -388,7 +440,7 @@ const Rooms = () => {
             >
               <h5 className="modal-title text-white fw-bold d-flex align-items-center gap-2 mb-3">
                 <Plus size={20} />
-                Add New Room
+                { isEdit === true ? "Update Room"  : "Add New Room" }
               </h5>
               <button
                 type="button"
@@ -397,111 +449,12 @@ const Rooms = () => {
               ></button>
             </div>
 
-            <div className="modal-body p-4">
-              <div className="mb-3">
-                <label
-                  className="form-label fw-semibold small"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Room Number <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="roomNo"
-                  className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
-                  placeholder="Enter room number"
-                  value={formData.roomNo}
-                  onChange={handleChange}
-                  style={{
-                    borderRadius: "10px",
-                    border: `2px solid ${theme.border}`,
-                    padding: "12px",
-                    background: theme.inputBg,
-                    color: theme.inputText,
-                  }}
-                />
-              </div>
+            <RoomForm 
+              onSubmit={isEdit === true ? updateRoom : addRoom}   
+              initialData={isEdit === true ? selectedRoom : null}  
+              isEdit={isEdit}
+            />
 
-              <div className="mb-3">
-                <label
-                  className="form-label fw-semibold small"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Room Rent(Per Person) <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="rent"
-                  className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
-                  placeholder="Enter amount"
-                  value={formData.rent}
-                  onChange={handleChange}
-                  style={{
-                    borderRadius: "10px",
-                    border: `2px solid ${theme.border}`,
-                    padding: "12px",
-                    background: theme.inputBg,
-                    color: theme.inputText,
-                  }}
-                />
-              </div>
-
-              <div className="mb-3">
-                <label
-                  className="form-label fw-semibold small"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Capacity <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="capacity"
-                  className={`form-control themed-input-${currentTheme === "light" ? "light" : "dark"}`}
-                  placeholder="Number of persons"
-                  value={formData.capacity}
-                  onChange={handleChange}
-                  min="1"
-                  style={{
-                    borderRadius: "10px",
-                    border: `2px solid ${theme.border}`,
-                    padding: "12px",
-                    background: theme.inputBg,
-                    color: theme.inputText,
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="modal-footer border-0 pt-0 pb-4 px-4">
-              <button
-                className="btn"
-                data-bs-dismiss="modal"
-                style={{
-                  borderRadius: "10px",
-                  padding: "10px 24px",
-                  fontWeight: "500",
-                  background: theme.btnSecondary,
-                  color: "#ffffff",
-                  border: "none",
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn"
-                onClick={addRoom}
-                style={{
-                  borderRadius: "10px",
-                  padding: "10px 24px",
-                  fontWeight: "500",
-                  background: `linear-gradient(135deg, ${theme.btnPrimary} 0%, ${theme.btnPrimaryHover} 100%)`,
-                  border: "none",
-                  color: "#ffffff",
-                }}
-              >
-                Save Room
-              </button>
-            </div>
           </div>
         </div>
       </div>

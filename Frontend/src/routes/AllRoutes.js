@@ -22,7 +22,7 @@ const AppRoutes = () => {
         <Route element={<AdminIndex />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/rooms" element={<Rooms />} />
-          <Route path="/room-profile" element={<RoomProfile />} />
+          <Route path="/room-profile/:id" element={<RoomProfile />} />
           <Route path="/add-member" element={<AddMember />} />
           <Route path="/members" element={<ViewMember />} />
           <Route path="/edit-member/:id" element={<EditMember />} />

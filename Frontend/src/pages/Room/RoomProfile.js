@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from "react";
 import {
+  User,
   Banknote,
   Users,
   ShieldCheck,
+  Venus,
+  Mars,
+  Transgender,
+  Mail,
+  Phone,
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import ApiRequest from "../../api/ApiRequest";
+import { useParams } from "react-router-dom";
 
 const RoomProfile = () => {
+  const { id } = useParams();
+
   const { theme } = useTheme();
 
   const [room, setRoom] = useState(null);
 
   const fetchRoomData = async () => {
     try {
-      const response = await ApiRequest("/room-profile");
+      const response = await ApiRequest(`/room-profile/${id}`);
       setRoom(response.roomData);
     } catch (error) {
       console.error("Error fetching room data:", error);
@@ -61,7 +70,7 @@ const RoomProfile = () => {
             className="px-3 py-1 rounded-pill"
             style={{
               backgroundColor:
-                room.status === "active"
+                room.status === "Available"
                   ? theme.badgeSuccess
                   : theme.badgeDanger,
               color: "#fff",
@@ -100,7 +109,12 @@ const RoomProfile = () => {
                 <div className="small" style={{ color: theme.textSecondary }}>
                   Rent
                 </div>
-                <div className="fw-semibold" style={{ color: theme.textPrimary }} >₹{room.rent}</div>
+                <div
+                  className="fw-semibold"
+                  style={{ color: theme.textPrimary }}
+                >
+                  ₹{room.rent}
+                </div>
               </div>
             </div>
           </div>
@@ -131,7 +145,10 @@ const RoomProfile = () => {
                 <div className="small" style={{ color: theme.textSecondary }}>
                   Capacity
                 </div>
-                <div className="fw-semibold" style={{ color: theme.textPrimary }}>
+                <div
+                  className="fw-semibold"
+                  style={{ color: theme.textPrimary }}
+                >
                   {room.members.length} / {room.capacity}
                 </div>
               </div>
@@ -164,7 +181,10 @@ const RoomProfile = () => {
                 <div className="small" style={{ color: theme.textSecondary }}>
                   Updated
                 </div>
-                <div className="fw-semibold" style={{ color: theme.textPrimary }}>
+                <div
+                  className="fw-semibold"
+                  style={{ color: theme.textPrimary }}
+                >
                   {new Date(room.updatedAt).toLocaleDateString()}
                 </div>
               </div>
@@ -198,11 +218,24 @@ const RoomProfile = () => {
                   {/* NAME + STATUS */}
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <div>
-                      <div className="fw-semibold">{member.name}</div>
+                      <div
+                        className="fw-semibold"
+                        style={{ color: theme.textPrimary }}
+                      >
+                        <User size={16} className="text-warning" />{" "}
+                        {member.name || "Not Available"}
+                      </div>
                       <div
                         className="small"
                         style={{ color: theme.textSecondary }}
                       >
+                        {member.gender === "Male" ? (
+                          <Mars size={13} color={"skyblue"} />
+                        ) : member.gender === "Female" ? (
+                          <Venus size={13} color={"pink"} />
+                        ) : (
+                          <Transgender size={13} color={"purple"} />
+                        )}{" "}
                         {member.gender}
                       </div>
                     </div>
@@ -227,8 +260,12 @@ const RoomProfile = () => {
                     className="small mb-2"
                     style={{ color: theme.textSecondary }}
                   >
-                    <div>{member.email}</div>
-                    <div>{member.phoneNo}</div>
+                    <div>
+                      <Mail size={13} color={"#EA4335"} /> {member.email}
+                    </div>
+                    <div>
+                      <Phone size={13} color={"#22C55E"} /> +91 {member.phoneNo}
+                    </div>
                   </div>
 
                   {/* FINANCIAL */}
@@ -237,7 +274,12 @@ const RoomProfile = () => {
                       <div className="small" style={{ color: theme.textMuted }}>
                         Deposit
                       </div>
-                      <div className="fw-semibold">₹{member.deposite}</div>
+                      <div
+                        className="fw-semibold"
+                        style={{ color: theme.textSecondary }}
+                      >
+                        ₹{member.deposite}
+                      </div>
                     </div>
 
                     <div className="text-end">
