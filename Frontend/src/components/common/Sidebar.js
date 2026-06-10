@@ -25,7 +25,8 @@ const Sidebar = () => {
       icon: UserPlus,
       children: [
         { name: "Add Member", path: "/add-member" },
-        { name: "All Members", path: "/members" },
+        { name: "Active Members", path: "/members" },
+        { name: "Inactive Members", path: "/inactive-members" },
       ],
     },
     {
@@ -201,7 +202,7 @@ const Sidebar = () => {
         className="d-flex flex-column position-fixed sidebar-root"
         style={{
           width: isCollapsed ? "72px" : "230px",
-          minHeight: "100vh",
+          minHeight: "100%",
           background:
             theme.sidebarBg ||
             "linear-gradient(180deg, #0f1724 0%, #111827 100%)",

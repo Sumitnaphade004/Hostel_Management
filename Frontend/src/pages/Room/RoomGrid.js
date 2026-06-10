@@ -58,14 +58,14 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
           <Pencil size={14} />
           <span>Edit</span>
         </button>
-        <button
+        {/* <button
           className="action-btn btn-delete"
           onClick={() => onDelete?.(room)}
           title="Delete"
         >
           <Trash2 size={14} />
           <span>Delete</span>
-        </button>
+        </button> */}
       </div>
 
       <style>{`

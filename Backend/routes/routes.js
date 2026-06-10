@@ -7,6 +7,7 @@ const router = express.Router();
 
 const Room = require('../models/Rooms');
 const Member = require('../models/Member');
+const uploads = require("../middlewares/uploads");
 
 router.get('/', (req, res)=>{
     res.send("hello")
@@ -24,10 +25,12 @@ router.get('/room-profile/:id', authMiddleware, RoomController.roomProfile);
 router.post('/update-room', authMiddleware, RoomController.updateRoom);
 
 // ------------------------------------------------------------------ Member ------------------------------------------------------------------
-router.post('/save-member', authMiddleware, MemberController.saveMember);
+router.post('/save-member', authMiddleware, uploads, MemberController.saveMember);
 router.get('/edit-member/:id', authMiddleware, MemberController.editMember);
-router.post('/update-member', authMiddleware, MemberController.updateMember);
+router.post('/update-member', authMiddleware, uploads, MemberController.updateMember);
+router.get('/member-profile/:id', authMiddleware, uploads, MemberController.memberProfile);
 router.get('/members', authMiddleware, MemberController.allMembers);
+router.get('/inactive-members', authMiddleware, MemberController.inactiveMembers);
 router.get('/member-deactivate/:id', authMiddleware, MemberController.deactivateMember);
 
 router.get('/test', async (req, res)=>{

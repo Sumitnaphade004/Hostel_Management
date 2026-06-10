@@ -3,13 +3,15 @@ import AdminIndex from "../layouts/AdminIndex";
 import Dashboard from "../pages/Dashboard";
 import Rooms from "../pages/Room/ViewRoom";
 import AddMember from "../pages/Member/AddMember";
-import ViewMember from "../pages/Member/ViewMember";
+import MemberList from "../pages/Member/MemberList";
 import ViewTransaction from "../pages/Transaction/ViewTransaction";
 import AddTransaction from "../pages/Transaction/AddTransactions";
 import Login from "../pages/Login";
 import ProtectedRoute from "./ProtectedRoutes";
 import EditMember from "../pages/Member/EditMember";
 import RoomProfile from "../pages/Room/RoomProfile";
+import InactiveMemberList from "../pages/Member/InactiveMemberList";
+import MemberProfile from "../pages/Member/MemberProfile";
 
 const AppRoutes = () => {
   return (
@@ -24,8 +26,10 @@ const AppRoutes = () => {
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/room-profile/:id" element={<RoomProfile />} />
           <Route path="/add-member" element={<AddMember />} />
-          <Route path="/members" element={<ViewMember />} />
+          <Route path="/members" element={<MemberList />} />
+          <Route path="/inactive-members" element={<InactiveMemberList />} />
           <Route path="/edit-member/:id" element={<EditMember />} />
+          <Route path="/member-profile/:id" element={<MemberProfile />} />
           <Route path="/view-transactions" element={<ViewTransaction />} />
           <Route path="/add-transactions" element={<AddTransaction />} />
         </Route>

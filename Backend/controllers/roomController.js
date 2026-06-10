@@ -104,7 +104,7 @@ class RoomController {
             attributes: ["id"],
           },
         ],
-        where: { id: 1 },
+        where: { id: body.id },
       });
 
       if (body.capacity < memberCount){
@@ -115,7 +115,7 @@ class RoomController {
         body.status = "Available";
       }
 
-      // await Room.update(body, { where: body.id });
+      await Room.update(body, { where: { id: body.id} });
 
       res.status(200).json({ success: true, message: "Room data updated successfully." });
     } catch (error) {

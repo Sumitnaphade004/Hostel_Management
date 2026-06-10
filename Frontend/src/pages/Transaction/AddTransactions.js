@@ -6,13 +6,11 @@ const AddTransaction = () => {
   const { theme, currentTheme } = useTheme();
 
   const [formData, setFormData] = useState({
-    type: "income",
-    category: "",
+    userId: null,
     amount: "",
-    paymentMode: "",
-    referenceId: "",
-    date: "",
-    description: "",
+    paymentDate: "",
+    month: "",
+    status: "",
   });
 
   const handleChange = (e) => {
@@ -46,28 +44,6 @@ const AddTransaction = () => {
         <div className="card-body p-4">
           <form onSubmit={handleSubmit}>
             <div className="row g-4">
-              {/* Transaction Type */}
-              <div className="col-md-4">
-                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>
-                  Transaction Type
-                </label>
-                <select
-                  className="form-select"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  style={{
-                    background: theme.inputBg,
-                    color: theme.inputText,
-                    border: `1px solid ${theme.inputBorder}`,
-                  }}
-                >
-                  <option value="income">Income</option>
-                  <option value="expense">Expense</option>
-                </select>
-              </div>
-
-              {/* Category */}
               <div className="col-md-4">
                 <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>Category</label>
                 <select
@@ -90,6 +66,28 @@ const AddTransaction = () => {
                   <option>Other</option>
                 </select>
               </div>
+              {/* Transaction Type */}
+              <div className="col-md-4">
+                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>
+                  Select Member 
+                </label>
+                <select
+                  className="form-select"
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  style={{
+                    background: theme.inputBg,
+                    color: theme.inputText,
+                    border: `1px solid ${theme.inputBorder}`,
+                  }}
+                >
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                </select>
+              </div>
+
+              {/* Category */}
 
               {/* Amount */}
               <div className="col-md-4">

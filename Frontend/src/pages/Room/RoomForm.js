@@ -68,7 +68,7 @@ const RoomForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
 
         <div className="mb-3">
           <label className="form-label fw-semibold small" style={{ color: theme.textSecondary }}>
-            Rent <span className="text-danger">*</span>
+            Rent (Each) <span className="text-danger">*</span>
           </label>
           <input
             type="number"

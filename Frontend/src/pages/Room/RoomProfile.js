@@ -32,6 +32,7 @@ const RoomProfile = () => {
 
   useEffect(() => {
     fetchRoomData();
+    // eslint-disable-next-line
   }, []);
 
   if (!room) {
@@ -185,7 +186,7 @@ const RoomProfile = () => {
                   className="fw-semibold"
                   style={{ color: theme.textPrimary }}
                 >
-                  {new Date(room.updatedAt).toLocaleDateString()}
+                  {new Date(room.updatedAt).toLocaleDateString("en-In", {day: "2-digit", month: "2-digit", year: "numeric"})}
                 </div>
               </div>
             </div>

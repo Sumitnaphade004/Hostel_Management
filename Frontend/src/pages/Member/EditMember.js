@@ -26,7 +26,8 @@ const EditMember = () => {
     roomId: "",
     dateOfJoining: "",
     status: "active",
-    deposite: ""
+    deposite: "",
+    idProofImg: {},
   });
 
   const [rooms, setRooms] = useState([]);
@@ -63,15 +64,16 @@ const EditMember = () => {
   useEffect(() => {
     fetchRooms();
     fetchMember();
+    // eslint-disable-next-line
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files, type } = e.target;
 
-    setFormData({
-      ...formData,
-      [name]: name === "roomId" ? parseInt(value) || "" : value,
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "file" ? files[0] : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -103,10 +105,18 @@ const EditMember = () => {
         return;
       }
 
-      const response = await ApiRequest("/update-member", {
-        method: "POST",
-        body: formData,
+      const payload = new FormData();
+
+      Object.keys(formData).forEach((key) => {
+        payload.append(key, formData[key]);
       });
+
+      const response = await ApiRequest("/update-member", {
+          method: "POST",
+          body: payload,
+        },
+        true
+      );
 
       if (response?.success === false) {
         Swal.fire({
@@ -233,8 +243,8 @@ const EditMember = () => {
                   type="text"
                   name="phoneNo"
                   pattern="^[6-9]\d{9}$"
-                  maxlength="10"
-                  minlength="10"
+                  maxLength="10"
+                  minLength="10"
                   placeholder="Enter phone number"
                   value={formData.phoneNo}
                   onChange={handleChange}
@@ -338,6 +348,20 @@ const EditMember = () => {
                   className="form-control"
                 />
               </div>
+
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  ID Photo
+                </label>
+                <input
+                  type="file"
+                  name="idProofImg"
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
             </div>
 
             {/* Hostel Info */}
@@ -422,8 +446,8 @@ const EditMember = () => {
                   type="text"
                   name="emergencyContact"
                   pattern="^[6-9]\d{9}$"
-                  maxlength="10"
-                  minlength="10"
+                  maxLength="10"
+                  minLength="10"
                   value={formData.emergencyContact}
                   onChange={handleChange}
                   className="form-control"

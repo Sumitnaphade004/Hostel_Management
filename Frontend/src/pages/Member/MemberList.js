@@ -7,15 +7,20 @@ import {
   UserX,
   Mail,
   PhoneCall,
+  Eye,
+  EyeOff,
 } from "lucide-react"; // Optional: Use any icon library
 import ApiRequest from "../../api/ApiRequest";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { IMAGE_URL } from "../../api/Api";
 
-const ViewMembers = () => {
+const MemberList = () => {
   const { theme, currentTheme } = useTheme();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
 
   // Filter States
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +67,6 @@ const ViewMembers = () => {
 
   const navigate = useNavigate();
 
-
   const handleEdit = async (id) => {
     try {
       navigate(`/edit-member/${id}`);
@@ -73,7 +77,7 @@ const ViewMembers = () => {
         icon: "error",
       });
     }
-  }
+  };
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
@@ -86,7 +90,7 @@ const ViewMembers = () => {
 
     if (result.isConfirmed) {
       try {
-        await ApiRequest(`/member-deactivate/${id}`); 
+        await ApiRequest(`/member-deactivate/${id}`);
 
         Swal.fire({
           title: "Deactivated!",
@@ -105,6 +109,13 @@ const ViewMembers = () => {
     }
   };
 
+  const handleNavigation = async (id) =>{
+    try {
+      navigate(`/member-profile/${id}`);
+    } catch (error) {
+      console.error("Error while navigating to the member profile: ", error);
+    }
+  }
   return (
     <div
       className="container-fluid py-3"
@@ -212,8 +223,9 @@ const ViewMembers = () => {
                   <th className="px-4 py-3 border-0">Name</th>
                   <th className="py-3 border-0">Contact No</th>
                   <th className="py-3 border-0 text-center">Room</th>
-                  <th className="py-3 border-0">Joined Date</th>
                   <th className="py-3 border-0">Status</th>
+                  <th className="py-3 border-0">ID Proof</th>
+                  <th className="py-3 border-0">Joined Date</th>
                   <th className="py-3 border-0 text-end px-4">Action</th>
                 </tr>
               </thead>
@@ -237,10 +249,10 @@ const ViewMembers = () => {
                       style={{ borderBottom: `1px solid ${theme.border}` }}
                     >
                       <td className="px-4 py-2">{index + 1}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2" onClick={() => handleNavigation(member.id)} style={{ cursor: "pointer" }}>
                         <div className="d-flex align-items-center">
                           <div
-                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                            className="rounded-circle bg-info fw-bold text-white d-flex align-items-center justify-content-center me-3"
                             style={{ width: "40px", height: "40px" }}
                           >
                             {member.name.charAt(0)}
@@ -256,7 +268,8 @@ const ViewMembers = () => {
                               className="small"
                               style={{ color: theme.textSecondary }}
                             >
-                              <Mail size={13} className="me-1 text-warning" />{member.email}
+                              <Mail size={13} className="me-1 text-warning" />
+                              {member.email}
                             </div>
                           </div>
                         </div>
@@ -276,21 +289,47 @@ const ViewMembers = () => {
                         </span>
                       </td>
                       <td className="py-2" style={{ color: theme.textPrimary }}>
-                        <Calendar size={14} className="me-2 text-info" />
-                        {new Date(member.createdAt).toLocaleDateString(
-                          "en-IN",
-                          { day: "2-digit", month: "2-digit", year: "numeric" },
-                        )}
-                      </td>
-                      <td className="py-2" style={{ color: theme.textPrimary }}>
                         <span
                           className={`badge bg-${member.status === "active" ? "success" : "danger"} px-3`}
                         >
                           {member.status ? member.status : "N/A"}
                         </span>
                       </td>
+                      <td className="py-2" style={{ color: theme.textPrimary }}>
+                        {member.idProofImg ? (
+                          <div
+                            className="d-flex align-items-center mx-3"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              setShowModal(true);
+                              setImageUrl(member.idProofImg);
+                            }}
+                          >
+                            <Eye size={20} className="me-2 text-success" />
+                          </div>
+                        ) : (
+                          <div
+                            className="d-flex align-items-center mx-3"
+                            style={{ cursor: "not-allowed" }}
+                          >
+                            <EyeOff size={20} className="me-2 text-danger" />
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-2" style={{ color: theme.textPrimary }}>
+                        <Calendar size={14} className="me-2 text-info" />
+                        {new Date(member.createdAt).toLocaleDateString(
+                          "en-IN",
+                          { day: "2-digit", month: "2-digit", year: "numeric" },
+                        )}
+                      </td>
                       <td className="py-2 text-end px-4">
-                        <SquarePen size={20} className="me-2 text-success" style={{ cursor: "pointer" }} onClick={() => handleEdit(member.id)} />
+                        <SquarePen
+                          size={20}
+                          className="me-2 text-success"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleEdit(member.id)}
+                        />
                         <UserX
                           size={20}
                           className="me-2 text-danger cursor-pointer"
@@ -306,6 +345,66 @@ const ViewMembers = () => {
           </div>
         </div>
       </div>
+      {showModal && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="position-fixed top-0 start-0 w-100 h-100"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.75)",
+              backdropFilter: "blur(3px)",
+              zIndex: 1040,
+            }}
+            onClick={() => {
+              setShowModal(false);
+              setImageUrl(null);
+            }}
+          />
+
+          {/* Viewer */}
+          <div
+            className="position-fixed top-50 start-50 translate-middle bg-white rounded-4 shadow-lg overflow-hidden"
+            style={{
+              width: "800px",
+              maxWidth: "95vw",
+              maxHeight: "90vh",
+              zIndex: 1050,
+            }}
+          >
+            {/* Header */}
+            <div className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+              <h5 className="mb-0 fw-semibold">ID Proof Preview</h5>
+
+              <button
+                className="btn-close"
+                onClick={() => {
+                  setShowModal(false);
+                  setImageUrl(null);
+                }}
+              />
+            </div>
+
+            {/* Image */}
+            <div
+              className="d-flex justify-content-center align-items-center p-3"
+              style={{
+                background: "#f8f9fa",
+                minHeight: "500px",
+              }}
+            >
+              <img
+                src={`${IMAGE_URL}${imageUrl}`}
+                alt="ID Proof"
+                className="img-fluid rounded shadow-sm"
+                style={{
+                  maxHeight: "70vh",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+          </div>
+        </>
+      )}
       <style>{`
         .themed-input-light::placeholder {
           color: ${theme.textSecondary};
@@ -327,4 +426,4 @@ const ViewMembers = () => {
   );
 };
 
-export default ViewMembers;
+export default MemberList;

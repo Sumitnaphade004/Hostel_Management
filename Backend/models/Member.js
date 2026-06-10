@@ -63,7 +63,7 @@ const Members = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Rooms", 
+        model: "Rooms",
         key: "id",
       },
     },
@@ -75,11 +75,15 @@ const Members = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    idProofImg: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     tableName: "members",
     timestamps: true,
-  }
+  },
 );
 
 // Associations

@@ -1,10 +1,17 @@
 const Member = require("../models/Member");
+const Payment = require("../models/Payments");
 const Rooms = require("../models/Rooms");
 
 class MemberController {
   static async saveMember(req, res) {
     try {
       const memberData = req.body;
+      let idProofImg;
+
+      if (req.files?.idProofImg) {
+        idProofImg = req.files.idProofImg[0];
+        memberData.idProofImg = idProofImg.filename;
+      }
 
       const existingMember = await Member.findOne({
         where: {
@@ -75,7 +82,24 @@ class MemberController {
             attributes: ["roomNo"],
           },
         ],
-        where: { status: "active"}
+        where: { status: "active" },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "All members fetched successfully.",
+        members,
+      });
+    } catch (error) {
+      console.error("Error while fetching all the member: ", error);
+      res.status(500).json({ message: "Internl Server Error." });
+    }
+  }
+
+  static async inactiveMembers(req, res) {
+    try {
+      const members = await Member.findAll({
+        where: { status: "inactive" },
       });
 
       return res.status(200).json({
@@ -111,6 +135,12 @@ class MemberController {
   static async updateMember(req, res) {
     try {
       const body = req.body;
+      let idProofImg;
+
+      if (req.files?.idProofImg) {
+        idProofImg = req.files.idProofImg[0];
+        body.idProofImg = idProofImg.filename;
+      }
 
       const existingMember = await Member.findOne({
         where: { id: body.id },
@@ -123,7 +153,7 @@ class MemberController {
         });
       }
 
-      if (existingMember.roomId === body.roomId) {
+      if (existingMember.roomId == body.roomId) {
         await Member.update(body, {
           where: { id: body.id },
         });
@@ -207,9 +237,14 @@ class MemberController {
         where: { id },
       });
 
-      if(!existingMember) return res.status(404).json({ success: true, message: "Member not found." });
+      if (!existingMember)
+        return res
+          .status(404)
+          .json({ success: true, message: "Member not found." });
 
-      existingMember?.status === "active" ? existingMember.status = "inactive" : existingMember.status = "active";
+      existingMember?.status === "active"
+        ? (existingMember.status = "inactive")
+        : (existingMember.status = "active");
       await existingMember.save();
 
       const room = await Rooms.findOne({
@@ -219,10 +254,49 @@ class MemberController {
       room.status = "Available";
       room.save();
 
-      return res.status(200).json({ success: true, message: "Member status updated to inactive" });
+      return res
+        .status(200)
+        .json({ success: true, message: "Member status updated to inactive" });
     } catch (error) {
       console.error("Error while fetching all the member: ", error);
       res.status(500).json({ message: "Internl Server Error." });
+    }
+  }
+
+  static async memberProfile(req, res) {
+    try {
+      const memberId = req.params.id;
+
+      if (!memberId) {
+        res
+          .status(404)
+          .json({ success: false, message: "Member ID is required." });
+      }
+
+      const memberData = await Member.findOne({
+        where: { id: memberId },
+        include: [
+          {
+            model: Payment,
+            as: "payments",
+            separate: true,
+            order: [["id", "DESC"]],
+          },{
+            model: Rooms,
+            as: "room"
+          }
+        ],
+      });
+
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "Member profile data fetched successfully.",
+          memberData,
+        });
+    } catch (error) {
+      console.error("Error in member profile: ", error);
     }
   }
 }

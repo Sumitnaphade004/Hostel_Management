@@ -8,17 +8,11 @@ const storage = multer.diskStorage({
     let folderPath = '';
 
     switch (file.fieldname) {
-      case 'profile_photo':
-        folderPath = 'public/assets/images/employee/profilePhoto/';
-        break;
-      case 'aadhar_card':
-        folderPath = 'public/assets/images/employee/aadharcard/';
-        break;
-      case 'pan_card':
-        folderPath = 'public/assets/images/employee/pancard/';
+      case 'idProofImg':
+        folderPath = 'public/assets/member/idProof/';
         break;
       default:
-        folderPath = 'public/assets/images/employee/others/';
+        folderPath = 'public/assets/others/';
     }
 
     fs.mkdirSync(folderPath, { recursive: true });
@@ -34,7 +28,5 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 module.exports = upload.fields([
-  { name: 'profile_photo', maxCount: 1 },
-  { name: 'aadhar_card', maxCount: 1 },
-  { name: 'pan_card', maxCount: 1 },
+  { name: 'idProofImg', maxCount: 1 },
 ]);

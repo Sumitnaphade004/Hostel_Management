@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
-const Users = require("./Users"); 
+const Member = require("./Member"); 
 
 const Payment = sequelize.define(
   "Payment",
@@ -14,7 +14,7 @@ const Payment = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "users", // must match User table name
+        model: "members", 
         key: "id",
       },
     },
@@ -42,7 +42,7 @@ const Payment = sequelize.define(
 );
 
 // Associations
-Payment.belongsTo(Users, { foreignKey: "userId", as: "user" });
-Users.hasMany(Payment, { foreignKey: "userId", as: "payments" });
+Payment.belongsTo(Member, { foreignKey: "userId", as: "member" });
+Member.hasMany(Payment, { foreignKey: "userId", as: "payments" });
 
 module.exports = Payment;

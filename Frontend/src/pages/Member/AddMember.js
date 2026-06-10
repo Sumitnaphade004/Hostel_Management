@@ -23,7 +23,8 @@ const AddMember = () => {
     roomId: "",
     dateOfJoining: "",
     status: "active",
-    deposite: ""
+    deposite: "",
+    idProofImg: {},
   });
 
   const [rooms, setRooms] = useState([]);
@@ -42,7 +43,12 @@ const AddMember = () => {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, files, type } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "file" ? files[0] : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -65,7 +71,7 @@ const AddMember = () => {
         return;
       }
 
-      if(!/^[6-9]\d{9}$/.test(formData.phoneNo)){
+      if (!/^[6-9]\d{9}$/.test(formData.phoneNo)) {
         Swal.fire({
           icon: "warning",
           title: "Incorrect Phone Number",
@@ -73,13 +79,23 @@ const AddMember = () => {
         });
         return;
       }
-      
-      const response = await ApiRequest("/save-member", {
-        method: "POST",
-        body: formData,
+
+      const payload = new FormData();
+
+      Object.keys(formData).forEach((key) => {
+        payload.append(key, formData[key]);
       });
 
-      if(response?.success === false){
+      const response = await ApiRequest(
+        "/save-member",
+        {
+          method: "POST",
+          body: payload,
+        },
+        true,
+      );
+
+      if (response?.success === false) {
         Swal.fire({
           icon: "warning",
           title: "Exists",
@@ -112,10 +128,10 @@ const AddMember = () => {
         roomId: "",
         dateOfJoining: "",
         status: "active",
-        deposite: ""
+        deposite: "",
       });
 
-      navigate('/members');
+      navigate("/members");
     } catch (error) {
       console.error("Error: ", error);
     }
@@ -201,8 +217,8 @@ const AddMember = () => {
                   type="text"
                   name="phoneNo"
                   pattern="^[6-9]\d{9}$"
-                  maxlength="10"
-                  minlength="10"
+                  maxLength="10"
+                  minLength="10"
                   placeholder="Enter phone number"
                   value={formData.phoneNo}
                   onChange={handleChange}
@@ -309,6 +325,20 @@ const AddMember = () => {
                   className="form-control"
                 />
               </div>
+
+              <div className="col-md-6 mb-3">
+                <label
+                  className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
+                >
+                  ID Photo
+                </label>
+                <input
+                  type="file"
+                  name="idProofImg"
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              </div>
             </div>
 
             {/* Hostel Info */}
@@ -332,7 +362,11 @@ const AddMember = () => {
                 >
                   <option value="">Select Room</option>
                   {rooms.map((room) => (
-                    <option key={room.id} value={room.id} className={`text-${room.status==="Available" ? "success" : "danger"}`}>
+                    <option
+                      key={room.id}
+                      value={room.id}
+                      className={`text-${room.status === "Available" ? "success" : "danger"}`}
+                    >
                       Room {room.roomNo} [{room.status}]
                     </option>
                   ))}
@@ -359,7 +393,7 @@ const AddMember = () => {
                 <label
                   className={`form-label text-${currentTheme === "dark" ? "light" : "dark"}`}
                 >
-                  Deposite Amount (₹) 
+                  Deposite Amount (₹)
                 </label>
                 <input
                   type="number"
@@ -392,11 +426,11 @@ const AddMember = () => {
                   Emergency Contact
                 </label>
                 <input
-                  type="text"
+                  type="tel"
                   name="emergencyContact"
                   pattern="^[6-9]\d{9}$"
-                  maxlength="10"
-                  minlength="10"
+                  maxLength="10"
+                  minLength="10"
                   value={formData.emergencyContact}
                   onChange={handleChange}
                   className="form-control"
