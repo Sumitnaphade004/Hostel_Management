@@ -32,10 +32,7 @@ const Sidebar = () => {
     {
       name: "Transactions",
       icon: Wallet,
-      children: [
-        { name: "Add Transaction", path: "/add-transactions" },
-        { name: "All Transactions", path: "/view-transactions" },
-      ],
+      path: "/view-transactions"
     },
   ];
 

@@ -30,8 +30,8 @@ const AppRoutes = () => {
           <Route path="/inactive-members" element={<InactiveMemberList />} />
           <Route path="/edit-member/:id" element={<EditMember />} />
           <Route path="/member-profile/:id" element={<MemberProfile />} />
+          <Route path="/add-transactions/:id/:name/:rent" element={<AddTransaction />} />
           <Route path="/view-transactions" element={<ViewTransaction />} />
-          <Route path="/add-transactions" element={<AddTransaction />} />
         </Route>
       </Route>
     </Routes>

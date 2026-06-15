@@ -8,10 +8,15 @@ const router = express.Router();
 const Room = require('../models/Rooms');
 const Member = require('../models/Member');
 const uploads = require("../middlewares/uploads");
+const PaymentController = require("../controllers/paymentController");
+const DashboardController = require("../controllers/dashboardController");
 
 router.get('/', (req, res)=>{
     res.send("hello")
 })
+
+// ------------------------------------------------------------------ Dashboard ------------------------------------------------------------------
+router.get("/dashboard", authMiddleware, DashboardController.dashboardData);
 
 // ------------------------------------------------------------------ Authentication ------------------------------------------------------------------
 router.post('/login', AuthController.login);
@@ -33,19 +38,8 @@ router.get('/members', authMiddleware, MemberController.allMembers);
 router.get('/inactive-members', authMiddleware, MemberController.inactiveMembers);
 router.get('/member-deactivate/:id', authMiddleware, MemberController.deactivateMember);
 
-router.get('/test', async (req, res)=>{
-          const memberCount = await Room.count({
-            include: [{
-              model: Member,
-              as: "members",
-              where: { status: "active" },
-              required: false,
-              attributes: ["id"],
-            }],
-            where: {id: 1}
-          })
-
-          res.json({memberCount});
-});
+// ------------------------------------------------------------------ Payment ------------------------------------------------------------------
+router.post('/add-payment', authMiddleware, PaymentController.addPayment);
+router.get('/payments', authMiddleware, PaymentController.allPayment);
 
 module.exports = router;

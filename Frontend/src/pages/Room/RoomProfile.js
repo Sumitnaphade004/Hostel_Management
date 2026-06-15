@@ -287,7 +287,7 @@ const RoomProfile = () => {
                       <div className="small" style={{ color: theme.textMuted }}>
                         Joined
                       </div>
-                      <div>{member.dateOfJoining}</div>
+                      <div>{new Date(member.dateOfJoining).toLocaleDateString("en-In", {day: "2-digit", month: "2-digit", year: "numeric"})}</div>
                     </div>
                   </div>
 

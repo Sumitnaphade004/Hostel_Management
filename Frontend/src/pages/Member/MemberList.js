@@ -238,7 +238,7 @@ const MemberList = () => {
                   </tr>
                 ) : filteredMembers.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="text-center py-5 text-muted">
+                    <td colSpan="8" className="text-center py-5" style={{ color: theme.textPrimary }}>
                       No members match your criteria.
                     </td>
                   </tr>

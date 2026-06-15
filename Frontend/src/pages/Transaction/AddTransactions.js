@@ -1,31 +1,93 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { CreditCard, IndianRupee, FileText, Calendar } from "lucide-react";
+import { User, IndianRupee, Calendar } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import ApiRequest from "../../api/ApiRequest";
 
 const AddTransaction = () => {
   const { theme, currentTheme } = useTheme();
+  const { id, name, rent } = useParams();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     userId: null,
-    amount: "",
+    userName: "",
     paymentDate: "",
+    amount: "",
     month: "",
-    status: "",
+    description: "",
+    status: "Paid",
   });
+
+  useEffect(() => {
+    setFormData({
+      userId: id || null,
+      userName: name || "",
+      paymentDate: new Date().toISOString().split("T")[0] || "",
+      amount: rent || "",
+      month: null,
+      description: null,
+      status: "Paid",
+    });
+  }, [id, name, rent]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Transaction Data:", formData);
+    if (
+      !formData.userId ||
+      !formData.userName ||
+      !formData.paymentDate ||
+      !formData.amount ||
+      !formData.month ||
+      !formData.status
+    ) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Fields",
+        text: "Please fill all required fields",
+      });
+    }
+
+    await ApiRequest("/add-payment", {
+      method: "POST",
+      body: formData,
+    });
+
+    await Swal.fire({
+      icon: "success",
+      title: "Transaction Done",
+      text: "Transaction details stored successfully."
+    })
+
+    navigate(-1);
   };
+
+  const currentYear = new Date().getFullYear();
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   return (
     <div
       className="container-fluid p-4"
-      style={{ background: theme.containerBg}}
+      style={{ background: theme.containerBg }}
     >
       {/* Page Title */}
       <h4 className="fw-bold mb-4" style={{ color: theme.textPrimary }}>
@@ -38,60 +100,18 @@ const AddTransaction = () => {
         style={{
           background: theme.cardBg,
           boxShadow: theme.cardShadow,
-        //   maxWidth: "900px",
+          //   maxWidth: "900px",
         }}
       >
         <div className="card-body p-4">
           <form onSubmit={handleSubmit}>
             <div className="row g-4">
               <div className="col-md-4">
-                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>Category</label>
-                <select
-                  className="form-select"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  style={{
-                    background: theme.inputBg,
-                    color: theme.inputText,
-                    border: `1px solid ${theme.inputBorder}`,
-                  }}
+                <label
+                  className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}
                 >
-                  <option value="">Select Category</option>
-                  <option>Room Rent</option>
-                  <option>Mess Fees</option>
-                  <option>Electricity</option>
-                  <option>Maintenance</option>
-                  <option>Refund</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              {/* Transaction Type */}
-              <div className="col-md-4">
-                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>
-                  Select Member 
+                  Member Name <span className="text-danger">*</span>
                 </label>
-                <select
-                  className="form-select"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  style={{
-                    background: theme.inputBg,
-                    color: theme.inputText,
-                    border: `1px solid ${theme.inputBorder}`,
-                  }}
-                >
-                  <option value="income">Income</option>
-                  <option value="expense">Expense</option>
-                </select>
-              </div>
-
-              {/* Category */}
-
-              {/* Amount */}
-              <div className="col-md-4">
-                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>Amount</label>
                 <div className="input-group">
                   <span
                     className="input-group-text"
@@ -100,7 +120,80 @@ const AddTransaction = () => {
                       border: `1px solid ${theme.inputBorder}`,
                     }}
                   >
-                    <IndianRupee size={16} />
+                    <User
+                      size={16}
+                      color={currentTheme === "light" ? "#000000" : "#ffffff"}
+                    />
+                  </span>
+                  <input
+                    type="text"
+                    name="userName"
+                    className={`form-control themed-input-${currentTheme}`}
+                    value={formData.userName}
+                    onChange={handleChange}
+                    placeholder="Enter member name"
+                    style={{
+                      background: theme.inputBg,
+                      color: theme.inputText,
+                      border: `1px solid ${theme.inputBorder}`,
+                    }}
+                    readOnly
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-4">
+                <label
+                  className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}
+                >
+                  Transaction Date <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span
+                    className="input-group-text"
+                    style={{
+                      background: theme.bgLight,
+                      border: `1px solid ${theme.inputBorder}`,
+                    }}
+                  >
+                    <Calendar
+                      size={16}
+                      color={currentTheme === "light" ? "#000000" : "#ffffff"}
+                    />
+                  </span>
+                  <input
+                    type="date"
+                    name="paymentDate"
+                    className="form-control"
+                    value={formData.paymentDate}
+                    onChange={handleChange}
+                    style={{
+                      background: theme.inputBg,
+                      color: theme.inputText,
+                      border: `1px solid ${theme.inputBorder}`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-4">
+                <label
+                  className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}
+                >
+                  Amount <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span
+                    className="input-group-text"
+                    style={{
+                      background: theme.bgLight,
+                      border: `1px solid ${theme.inputBorder}`,
+                    }}
+                  >
+                    <IndianRupee
+                      size={16}
+                      color={currentTheme === "light" ? "#000000" : "#ffffff"}
+                    />
                   </span>
                   <input
                     type="number"
@@ -118,92 +211,49 @@ const AddTransaction = () => {
                 </div>
               </div>
 
-              {/* Payment Mode */}
               <div className="col-md-4">
-                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>Payment Mode</label>
+                <label
+                  className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}
+                >
+                  Month <span className="text-danger">*</span>
+                </label>
                 <select
                   className="form-select"
-                  name="paymentMode"
-                  value={formData.paymentMode}
+                  name="month"
+                  value={formData.month}
                   onChange={handleChange}
-                  style={{
-                    background: theme.inputBg,
-                    color: theme.inputText,
-                    border: `1px solid ${theme.inputBorder}`,
-                  }}
                 >
-                  <option value="">Select Mode</option>
-                  <option>Cash</option>
-                  <option>UPI</option>
-                  <option>Bank Transfer</option>
-                  <option>Card</option>
+                  <option value="">Select Month</option>
+
+                  {months.map((month) => (
+                    <option key={month} value={`${month} ${currentYear}`}>
+                      {month} {currentYear}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              {/* Reference ID */}
               <div className="col-md-4">
-                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>
-                  Reference ID
+                <label
+                  className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}
+                >
+                  Status <span className="text-danger">*</span>
                 </label>
-                <div className="input-group">
-                  <span
-                    className="input-group-text"
-                    style={{
-                      background: theme.bgLight,
-                      border: `1px solid ${theme.inputBorder}`,
-                    }}
-                  >
-                    <CreditCard size={16} />
-                  </span>
-                  <input
-                    type="text"
-                    name="referenceId"
-                    className={`form-control themed-input-${currentTheme}`}
-                    value={formData.referenceId}
-                    onChange={handleChange}
-                    placeholder="Optional"
-                    style={{
-                      background: theme.inputBg,
-                      color: theme.inputText,
-                      border: `1px solid ${theme.inputBorder}`,
-                    }}
-                  />
-                </div>
+                <select
+                  className="form-select"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                >
+                  <option value="Paid">Paid</option>
+                  <option value="Pending">Pending</option>
+                </select>
               </div>
 
-              {/* Date */}
-              <div className="col-md-4">
-                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>
-                  Transaction Date
-                </label>
-                <div className="input-group">
-                  <span
-                    className="input-group-text"
-                    style={{
-                      background: theme.bgLight,
-                      border: `1px solid ${theme.inputBorder}`,
-                    }}
-                  >
-                    <Calendar size={16} />
-                  </span>
-                  <input
-                    type="date"
-                    name="date"
-                    className="form-control"
-                    value={formData.date}
-                    onChange={handleChange}
-                    style={{
-                      background: theme.inputBg,
-                      color: theme.inputText,
-                      border: `1px solid ${theme.inputBorder}`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Description */}
               <div className="col-12">
-                <label className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}>
+                <label
+                  className={`form-label fw-semibold text-${currentTheme === "light" ? "dark" : "light"}`}
+                >
                   Description / Notes
                 </label>
                 <textarea
@@ -227,6 +277,9 @@ const AddTransaction = () => {
               <button
                 type="reset"
                 className="btn btn-outline-secondary"
+                onClick={() => {
+                  navigate(-1);
+                }}
               >
                 Cancel
               </button>

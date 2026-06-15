@@ -62,7 +62,6 @@ class AuthController {
       });
       res.json({ message: "Logged out successfully" });
     } catch (error) {
-      console.error("Logout error:", err);
       return res.status(404).json({ message: "Internal Server Error." });
     }
   }
@@ -71,7 +70,6 @@ class AuthController {
     try {
       res.status(200).json({success: true, user: req.user});
     } catch (error) {
-      console.error("Logout error:", err);
       return res.status(404).json({ message: "Internal Server Error." });
     }
   }
